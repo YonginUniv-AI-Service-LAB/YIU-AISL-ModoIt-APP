@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
-import styles from './SurveyEmotionPage.styles';
+import styles from './SurveyImprovementPage.styles';
 import ProgressIndicator from './ProgressIndicator';
 
-export default function SurveyEmotionPage({ navigation }) {
+export default function SurveyImprovementPage({ navigation }) {
   const [selected, setSelected] = useState(null);
 
   const options = [
-    '너무 행복해요',
-    '행복해요',
-    '그냥 그래요',
-    '힘들어요',
-    '너무 힘들어요',
+    '건강 챙기기',
+    '일상 정비하기',
+    '감정 다스리기',
+    '목표 달성하기',
+    '생각해보기...',
   ];
 
   const handleNext = () => {
-    navigation.navigate('SurveyImprovement', { selectedOption: selected });
+    navigation.navigate('SurveyStregnth', { selectedOption: selected });
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <ProgressIndicator step={1} />
-      <Text style={styles.title}>우민님의 요즘 감정은 어떤가요?</Text>
+      <ProgressIndicator step={2} />
+      <Text style={styles.title}>어떠한 자기계발을 원하시나요?</Text>
       <View style={styles.optionsWrapper}>
         {options.map((option, index) => (
           <TouchableOpacity

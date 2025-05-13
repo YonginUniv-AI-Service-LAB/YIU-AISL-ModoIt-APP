@@ -12,6 +12,7 @@ export default function ProgressIndicator({ step = 1 }) {
           style={[
             styles.progressSegment,
             step === i && styles.progressSegmentActive,
+            i <= step && styles.progressSegmentActive,
           ]}
         />
       ))}

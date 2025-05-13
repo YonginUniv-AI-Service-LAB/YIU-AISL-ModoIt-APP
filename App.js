@@ -6,6 +6,7 @@ import SplashScreen from './pages/Splash/SplashScreen';
 import LoginPage from './pages/Login/LoginPage';
 import SurveyIntroPage from './pages/Survey/SurveyIntroPage';
 import SurveyEmotionPage from './pages/Survey/SurveyEmotionPage';
+import SurveyImprovementPage from './pages/Survey/SurveyImprovementPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,10 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginPage} />
         <Stack.Screen name="SurveyIntro" component={SurveyIntroPage} />
         <Stack.Screen name="SurveyEmotion" component={SurveyEmotionPage} />
+        <Stack.Screen
+          name="SurveyImprovement"
+          component={SurveyImprovementPage}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
