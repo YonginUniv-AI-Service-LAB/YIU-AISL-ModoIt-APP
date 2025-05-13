@@ -5,17 +5,18 @@ import styles from './SurveyIntroPage.styles';
 export default function SurveyIntroPage({ navigation }) {
   const handleNext = () => {
     // TODO: 다음 조사 페이지로 이동하도록 연결
-    navigation.navigate('SurveyStep1');
+    navigation.navigate('SurveyEmotion');
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
+
       <Text style={styles.title}>안녕하세요!</Text>
       {/* TODO: 사용자의 이름을 동적으로 가져와서 표시 */}
       <Text style={styles.description}>
-        지금부터{"\n"}우민님에게 맞는 최적의 루틴을 찾기 위한{"\n"}몇 가지 질문을 드릴게요!
+        지금부터{'\n'}우민님에게 맞는 최적의 루틴을 찾기 위한{'\n'}몇 가지
+        질문을 드릴게요!
       </Text>
 
       <TouchableOpacity style={styles.button} onPress={handleNext}>
