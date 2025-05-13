@@ -7,14 +7,16 @@ import {
 } from 'react-native';
 import styles from './LoginPage.styles';
 
-export default function LoginPage() {
+export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     console.log('이메일:', email);
     console.log('비밀번호:', password);
-    // 백엔드 API 연결 예정
+    // TODO 백엔드 API 연결
+    // 지금은 로그인 성공 시 사전조사 시작 페이지로 이동
+    navigation.navigate('SurveyIntro');
   };
 
   return (
