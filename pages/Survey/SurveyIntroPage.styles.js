@@ -1,35 +1,37 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    width: 390,
-    height: 844,
+    width,
+    height,
     backgroundColor: '#FFFFFF',
     position: 'relative',
     alignItems: 'center',
   },
   title: {
     position: 'absolute',
-    top: 273,
+    top: height * 0.32,
     fontWeight: '700',
-    fontSize: 30,
-    lineHeight: 31,
+    fontSize: width * 0.08,
+    lineHeight: width * 0.08,
     color: '#5F49EB',
   },
   description: {
     position: 'absolute',
-    top: 402,
-    width: 300,
+    top: height * 0.48,
+    width: width * 0.77,
     textAlign: 'center',
     fontWeight: '500',
-    fontSize: 20,
-    lineHeight: 32,
+    fontSize: width * 0.05,
+    lineHeight: width * 0.08,
     color: '#5F49EB',
   },
   button: {
     position: 'absolute',
-    top: 715,
-    width: 300,
+    top: height * 0.85,
+    width: width * 0.77,
     height: 50,
     backgroundColor: '#5F49EB',
     borderRadius: 100,
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: width * 0.05,
     fontWeight: '600',
   },
 });

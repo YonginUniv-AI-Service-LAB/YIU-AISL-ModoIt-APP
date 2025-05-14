@@ -8,10 +8,10 @@ export default function SurveyStrengthPage({ navigation }) {
 
   const options = [
     '조금은 바쁘게 지내고 싶어요',
-    '무나했으면 해요',
+    '무난했으면 해요',
     '여유로웠으면 해요',
     '많이 여유로웠으면 해요',
-    '천천히 시작하고 싶어요요',
+    '천천히 시작하고 싶어요',
   ];
 
   const handleNext = () => {
@@ -22,7 +22,7 @@ export default function SurveyStrengthPage({ navigation }) {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ProgressIndicator step={3} />
-      <Text style={styles.title}>루틴의 강도가 어땠으면 하나요요?</Text>
+      <Text style={styles.title}>루틴의 강도가 어땠으면 하나요?</Text>
       <View style={styles.optionsWrapper}>
         {options.map((option, index) => (
           <TouchableOpacity

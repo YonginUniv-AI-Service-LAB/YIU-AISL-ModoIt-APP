@@ -1,11 +1,12 @@
-// ProgressIndicator.styles.js
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
   progressContainer: {
     position: 'absolute',
-    top: 70,
-    width: 300,
+    top: height * 0.08,
+    width: width * 0.77,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -15,7 +16,7 @@ export default StyleSheet.create({
     flex: 1,
     height: 4,
     borderRadius: 2,
-    marginHorizontal: 4,
+    marginHorizontal: width * 0.01,
     backgroundColor: '#C4C4C4',
   },
   progressSegmentActive: {

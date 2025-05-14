@@ -1,32 +1,32 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-    container: {
-        width: 390,
-        height: 844,
-        backgroundColor: '#FFFFFF',
-        position: 'relative',
-        alignItems: 'center',
-    },
-    slogan: {
-        position: 'absolute',
-        top: 182,
-        fontFamily: 'Pretendard',
-        fontWeight: '700',
-        fontSize: 26,
-        lineHeight: 36,
-        color: '#5F49EB',
-        textAlign: 'center',
-    },
-    appName: {
-        position: 'absolute',
-        top: 422,
-        fontFamily: 'Pretendard',
-        fontWeight: '600',
-        fontSize: 26,
-        lineHeight: 36,
-        color: '#5F49EB',
-    },
+  container: {
+    width,
+    height,
+    backgroundColor: '#FFFFFF',
+    position: 'relative',
+    alignItems: 'center',
+  },
+  slogan: {
+    position: 'absolute',
+    top: height * 0.22,
+    fontWeight: '700',
+    fontSize: width * 0.07,
+    lineHeight: width * 0.09,
+    color: '#5F49EB',
+    textAlign: 'center',
+  },
+  appName: {
+    position: 'absolute',
+    top: height * 0.50,
+    fontWeight: '600',
+    fontSize: width * 0.07,
+    lineHeight: width * 0.09,
+    color: '#5F49EB',
+  },
 });
 
 export default styles;
