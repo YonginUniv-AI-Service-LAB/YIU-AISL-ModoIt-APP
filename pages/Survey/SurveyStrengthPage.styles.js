@@ -1,45 +1,46 @@
-// SurveyEmotionPage.styles.js
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    width: 390,
-    height: 844,
+    width,
+    height,
     backgroundColor: '#FFFFFF',
     position: 'relative',
     alignItems: 'center',
   },
   title: {
     position: 'absolute',
-    top: 180,
+    top: height * 0.21,
+    width: width * 0.77,
     fontWeight: '700',
-    fontSize: 30,
-    lineHeight: 31,
+    fontSize: width * 0.08,
+    lineHeight: width * 0.09,
     color: '#5F49EB',
     textAlign: 'center',
-    width: 300,
   },
   optionsWrapper: {
     position: 'absolute',
-    top: 290,
-    width: 300,
+    top: height * 0.34,
+    width: width * 0.77,
   },
   optionButton: {
-    width: 300,
+    width: width * 0.77,
     height: 45,
     borderRadius: 100,
     borderWidth: 1,
     borderColor: '#5F49EB',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 26,
+    marginTop: height * 0.03,
     backgroundColor: '#FFFFFF',
   },
   selectedButton: {
     backgroundColor: '#5F49EB',
   },
   optionText: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     fontWeight: '500',
     color: '#5F49EB',
   },
@@ -48,8 +49,8 @@ const styles = StyleSheet.create({
   },
   nextbutton: {
     position: 'absolute',
-    bottom: 70,
-    width: 300,
+    bottom: height * 0.08,
+    width: width * 0.77,
     height: 50,
     backgroundColor: '#5F49EB',
     borderRadius: 100,
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: width * 0.05,
     fontWeight: '600',
   },
 });
