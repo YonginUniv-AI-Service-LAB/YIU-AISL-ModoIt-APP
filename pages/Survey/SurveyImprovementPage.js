@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
 import styles from './SurveyImprovementPage.styles';
-import ProgressIndicator from './ProgressIndicator';
+import ProgressIndicator from '../../components/ProgressIndicator/ProgressIndicator';
 
 export default function SurveyImprovementPage({ navigation }) {
   const [selected, setSelected] = useState(null);
@@ -22,7 +22,7 @@ export default function SurveyImprovementPage({ navigation }) {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ProgressIndicator step={2} />
-      <Text style={styles.title}>어떠한 자기계발을 원하시나요?</Text>
+      <Text style={styles.title}>어떠한 자기계발을{'\n'}원하시나요?</Text>
       <View style={styles.optionsWrapper}>
         {options.map((option, index) => (
           <TouchableOpacity

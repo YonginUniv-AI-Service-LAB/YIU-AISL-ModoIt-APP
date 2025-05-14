@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
 import styles from './SurveyEmotionPage.styles';
-import ProgressIndicator from './ProgressIndicator';
+import ProgressIndicator from '../../components/ProgressIndicator/ProgressIndicator';
 
 export default function SurveyEmotionPage({ navigation }) {
   const [selected, setSelected] = useState(null);
@@ -22,7 +22,7 @@ export default function SurveyEmotionPage({ navigation }) {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ProgressIndicator step={1} />
-      <Text style={styles.title}>우민님의 요즘 감정은 어떤가요?</Text>
+      <Text style={styles.title}>우민님의 요즘 감정은{'\n'}어떤가요?</Text>
       <View style={styles.optionsWrapper}>
         {options.map((option, index) => (
           <TouchableOpacity
