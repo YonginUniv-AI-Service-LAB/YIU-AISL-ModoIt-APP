@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   loginButton: {
     position: 'absolute',
     top: height * 0.68,
-    width: width * 0.77,
+    width: width * 0.8,
     height: 50,
     alignSelf: 'center',
     backgroundColor: '#7A73FF',
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
 
   loginButtonText: {
     color: '#fff',
-    fontSize: width * 0.05,
+    fontSize: width * 0.051,
     fontWeight: '600',
   },
 
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   
   footerText: {
-    fontSize: width * 0.04,
+    fontSize: width * 0.042,
     color: '#ABABAB',
     marginHorizontal: 12,
   },
