@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   View,
+  Image,
   Text,
   TextInput,
   TouchableOpacity,
@@ -21,25 +22,28 @@ export default function LoginPage({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.logoBox} />
+      <Image
+        source={require('../../assets/images/logo2.png')}
+        style={styles.logo}
+      />
 
-      <Text style={[styles.label, { top: 358 }]}>이메일</Text>
+      <Text style={[styles.label, { top: 360 }]}>이메일</Text>
       <TextInput
-        style={[styles.input, { top: 380 }]}
+        style={[styles.input, { top: 377 }]}
         value={email}
         onChangeText={setEmail}
-        placeholder="이메일을 입력하세요"
-        placeholderTextColor="#C2C2C2"
+        // placeholder="이메일을 입력하세요"
+        // placeholderTextColor="#C2C2C2"
         keyboardType="email-address"
       />
 
-      <Text style={[styles.label, { top: 450 }]}>비밀번호</Text>
+      <Text style={[styles.label, { top: 455 }]}>비밀번호</Text>
       <TextInput
         style={[styles.input, { top: 470 }]}
         value={password}
         onChangeText={setPassword}
-        placeholder="비밀번호를 입력하세요"
-        placeholderTextColor="#C2C2C2"
+        // placeholder="비밀번호를 입력하세요"
+        // placeholderTextColor="#C2C2C2"
         secureTextEntry
       />
 

@@ -9,22 +9,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     position: 'relative',
   },
-  logoBox: {
+
+  logo: {
     position: 'absolute',
     top: height * 0.15,
-    left: width * 0.34,
-    width: width * 0.33,
-    height: width * 0.33,
-    backgroundColor: '#E3DDFF',
+    width: width * 0.31,
+    height: width * 0.31 * (195.53 / 148), // 원본 비율 유지
+    alignSelf: 'center', // 가운데 정렬
   },
+
   label: {
     position: 'absolute',
     top: height * 0.32,
     left: width * 0.11,
-    fontSize: width * 0.04,
+    fontSize: width * 0.045,
     fontWeight: '600',
-    color: '#826AFD',
+    color: '#ABABAB',
   },
+
   input: {
     position: 'absolute',
     top: height * 0.36,
@@ -32,45 +34,51 @@ const styles = StyleSheet.create({
     width: width * 0.78,
     height: 40,
     borderBottomWidth: 1,
-    borderBottomColor: '#826AFD',
+    borderBottomColor: '#ABABAB',
     fontSize: width * 0.04,
     color: '#000',
   },
+
   loginButton: {
     position: 'absolute',
-    top: height * 0.66,
-    left: width * 0.12,
+    top: height * 0.68,
     width: width * 0.77,
     height: 50,
-    backgroundColor: '#5F49EB',
+    alignSelf: 'center',
+    backgroundColor: '#7A73FF',
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   loginButtonText: {
     color: '#fff',
     fontSize: width * 0.05,
     fontWeight: '600',
   },
+
   footer: {
     position: 'absolute',
-    top: height * 0.76,
-    left: width * 0.32,
+    top: height * 0.77,
+    // left: width * 0.32,
     width: width * 0.43,
     height: 19,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
   },
+  
   footerText: {
     fontSize: width * 0.04,
-    color: '#292929',
+    color: '#ABABAB',
     marginHorizontal: 12,
   },
+
   divider: {
     width: 1,
     height: 14,
-    backgroundColor: '#292929',
+    backgroundColor: '#ABABAB',
   },
 });
 
