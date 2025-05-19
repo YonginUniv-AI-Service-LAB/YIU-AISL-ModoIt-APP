@@ -49,14 +49,14 @@ export default function SurveyImprovementPage({ navigation }) {
         onPress={() => {
           console.log('건너뛰기 버튼 눌림');
           // TODO: 메인 페이지 완성되면 아래로 교체할 것
-          // navigation.navigate('Main');
+          navigation.navigate('MyRoutine');
         }}
       >
         <Text style={styles.skipText}>건너뛰기</Text>
       </TouchableOpacity>
 
       <View style={styles.skipUnderline} />
-      
+
       <TouchableOpacity
         style={styles.nextbutton}
         onPress={handleNext}
