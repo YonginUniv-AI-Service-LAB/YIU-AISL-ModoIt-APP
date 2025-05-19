@@ -12,54 +12,85 @@ const styles = StyleSheet.create({
   },
   title: {
     position: 'absolute',
-    top: height * 0.21,
+    top: height * 0.2,
     width: width * 0.77,
     fontWeight: '700',
     fontSize: width * 0.08,
     lineHeight: width * 0.09,
-    color: '#5F49EB',
+    color: '#1A1A1A',
     textAlign: 'center',
   },
   optionsWrapper: {
     position: 'absolute',
-    top: height * 0.34,
+    top: height * 0.355,
     width: width * 0.77,
   },
+
   optionButton: {
     width: width * 0.77,
-    height: 45,
+    height: 47,
     borderRadius: 100,
     borderWidth: 1,
-    borderColor: '#5F49EB',
+    borderColor: '#ABABAB',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: height * 0.03,
     backgroundColor: '#FFFFFF',
   },
   selectedButton: {
-    backgroundColor: '#5F49EB',
+    backgroundColor: '#F0F0FF',
+    borderColor: '#7A73FF',
   },
   optionText: {
-    fontSize: width * 0.04,
+    fontSize: width * 0.044,
     fontWeight: '500',
-    color: '#5F49EB',
+    color: '#ABABAB',
   },
   selectedText: {
-    color: '#FFFFFF',
+    color: '#7A73FF',
   },
+
+  skipButton: {
+    position: 'absolute',
+    top: height * 0.810,
+    width: 56,
+    height: 19,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+
+  skipText: {
+    fontSize: width * 0.044,
+    lineHeight: width * 0.045,
+    fontWeight: '500',
+    color: '#ABABAB',
+  },
+
+  skipUnderline: {
+    position: 'absolute',
+    top: height * 0.836,
+    width: 62,
+    height: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ABABAB',
+    alignSelf: 'center',
+  },
+
+
   nextbutton: {
     position: 'absolute',
     bottom: height * 0.08,
     width: width * 0.77,
     height: 50,
-    backgroundColor: '#5F49EB',
+    backgroundColor: '#7A73FF',
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: width * 0.05,
+    fontSize: width * 0.051,
     fontWeight: '600',
   },
 });

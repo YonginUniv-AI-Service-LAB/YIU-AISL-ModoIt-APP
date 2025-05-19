@@ -15,13 +15,13 @@ export default function SurveyStrengthPage({ navigation }) {
   ];
 
   const handleNext = () => {
-    navigation.navigate('Survey1', { selectedOption: selected });
+    navigation.navigate('SurveyImprovement', { selectedOption: selected });
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <ProgressIndicator step={3} />
+      <ProgressIndicator step={2} />
       <Text style={styles.title}>루틴의 강도가{'\n'}어땠으면 하나요?</Text>
       <View style={styles.optionsWrapper}>
         {options.map((option, index) => (

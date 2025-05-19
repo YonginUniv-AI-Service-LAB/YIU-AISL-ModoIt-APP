@@ -4,7 +4,6 @@ import styles from './SurveyIntroPage.styles';
 
 export default function SurveyIntroPage({ navigation }) {
   const handleNext = () => {
-    // TODO: 다음 조사 페이지로 이동하도록 연결
     navigation.navigate('SurveyEmotion');
   };
 

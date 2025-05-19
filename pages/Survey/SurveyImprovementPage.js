@@ -11,17 +11,16 @@ export default function SurveyImprovementPage({ navigation }) {
     '일상 정비하기',
     '감정 다스리기',
     '목표 달성하기',
-    '생각해보기...',
   ];
 
   const handleNext = () => {
-    navigation.navigate('SurveyStrength', { selectedOption: selected });
+    navigation.navigate('Survey1', { selectedOption: selected });
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <ProgressIndicator step={2} />
+      <ProgressIndicator step={3} />
       <Text style={styles.title}>어떠한 자기계발을{'\n'}원하시나요?</Text>
       <View style={styles.optionsWrapper}>
         {options.map((option, index) => (
@@ -45,6 +44,19 @@ export default function SurveyImprovementPage({ navigation }) {
         ))}
       </View>
 
+      <TouchableOpacity
+        style={styles.skipButton}
+        onPress={() => {
+          console.log('건너뛰기 버튼 눌림');
+          // TODO: 메인 페이지 완성되면 아래로 교체할 것
+          // navigation.navigate('Main');
+        }}
+      >
+        <Text style={styles.skipText}>건너뛰기</Text>
+      </TouchableOpacity>
+
+      <View style={styles.skipUnderline} />
+      
       <TouchableOpacity
         style={styles.nextbutton}
         onPress={handleNext}

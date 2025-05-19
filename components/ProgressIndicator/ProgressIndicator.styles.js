@@ -17,9 +17,9 @@ export default StyleSheet.create({
     height: 4,
     borderRadius: 2,
     marginHorizontal: width * 0.01,
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#D9D9D9',
   },
   progressSegmentActive: {
-    backgroundColor: '#5F49EB',
+    backgroundColor: '#7A73FF',
   },
 });

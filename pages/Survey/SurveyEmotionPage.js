@@ -15,13 +15,14 @@ export default function SurveyEmotionPage({ navigation }) {
   ];
 
   const handleNext = () => {
-    navigation.navigate('SurveyImprovement', { selectedOption: selected });
+    navigation.navigate('SurveyStrength', { selectedOption: selected });
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ProgressIndicator step={1} />
+      {/* TODO: 사용자의 이름을 동적으로 가져와서 표시 */}
       <Text style={styles.title}>우민님의 요즘 감정은{'\n'}어떤가요?</Text>
       <View style={styles.optionsWrapper}>
         {options.map((option, index) => (
