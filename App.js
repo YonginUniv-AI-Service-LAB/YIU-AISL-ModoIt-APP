@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import SplashScreen from './pages/Splash/SplashScreen';
 import LoginPage from './pages/Login/LoginPage';
+import SignUpPage from './pages/SignUp/SignUpPage';
 import SurveyIntroPage from './pages/Survey/SurveyIntroPage';
 import SurveyEmotionPage from './pages/Survey/SurveyEmotionPage';
 import SurveyImprovementPage from './pages/Survey/SurveyImprovementPage';
@@ -18,6 +19,7 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={LoginPage} />
+        <Stack.Screen name="SignUp" component={SignUpPage} />
         <Stack.Screen name="SurveyIntro" component={SurveyIntroPage} />
         <Stack.Screen name="SurveyEmotion" component={SurveyEmotionPage} />
         <Stack.Screen

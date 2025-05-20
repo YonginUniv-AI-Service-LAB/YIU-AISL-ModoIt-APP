@@ -20,6 +20,15 @@ export default function LoginPage({ navigation }) {
     navigation.navigate('SurveyIntro');
   };
 
+  const handleNavigateToSignUp = () => {
+    navigation.navigate('SignUp'); // 회원가입 페이지로 이동
+  };
+
+  const handleNavigateToResetPassword = () => {
+    // TODO: 비밀번호 재설정 페이지 구현 후 연결
+    navigation.navigate('ResetPassword'); // 추후 해당 페이지 생성 필요
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -52,9 +61,15 @@ export default function LoginPage({ navigation }) {
       </TouchableOpacity>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>회원가입</Text>
+        <TouchableOpacity onPress={handleNavigateToSignUp}>
+          <Text style={styles.footerText}>회원가입</Text>
+        </TouchableOpacity>
+
         <View style={styles.divider} />
-        <Text style={styles.footerText}>비밀번호 찾기</Text>
+
+        <TouchableOpacity onPress={handleNavigateToResetPassword}>
+          <Text style={styles.footerText}>비밀번호 재설정</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
