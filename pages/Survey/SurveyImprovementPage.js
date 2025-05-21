@@ -14,7 +14,7 @@ export default function SurveyImprovementPage({ navigation }) {
   ];
 
   const handleNext = () => {
-    navigation.navigate('Survey1', { selectedOption: selected });
+    navigation.navigate('PreviewRoutine', { selectedOption: selected });
   };
 
   return (

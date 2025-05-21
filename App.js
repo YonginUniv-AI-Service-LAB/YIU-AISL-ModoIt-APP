@@ -9,6 +9,7 @@ import SurveyIntroPage from './pages/Survey/SurveyIntroPage';
 import SurveyEmotionPage from './pages/Survey/SurveyEmotionPage';
 import SurveyImprovementPage from './pages/Survey/SurveyImprovementPage';
 import SurveyStrengthPage from './pages/Survey/SurveyStrengthPage';
+import PreviewRoutinePage from './pages/PreviewRoutine/PreviewRoutinePage';
 import MainPage from './pages/Main/MainPage';
 
 const Stack = createNativeStackNavigator();
@@ -27,6 +28,7 @@ export default function App() {
           component={SurveyImprovementPage}
         />
         <Stack.Screen name="SurveyStrength" component={SurveyStrengthPage} />
+        <Stack.Screen name="PreviewRoutine" component={PreviewRoutinePage} />
         <Stack.Screen name="MainPage" component={MainPage} />
       </Stack.Navigator>
     </NavigationContainer>

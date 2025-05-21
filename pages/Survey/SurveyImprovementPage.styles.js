@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
 
   skipButton: {
     position: 'absolute',
-    top: height * 0.81,
+    top: height * 0.815,
     width: 56,
     height: 19,
     justifyContent: 'center',
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 
   skipUnderline: {
     position: 'absolute',
-    top: height * 0.836,
+    top: height * 0.841,
     width: 62,
     height: 0,
     borderBottomWidth: 1,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: width * 0.051,
+    fontSize: width * 0.049,
     fontWeight: '600',
   },
 });
