@@ -1,18 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Dimensions } from 'react-native';
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
 import styles from './PreviewRoutinePage.styles';
 
+const { width } = Dimensions.get('window');
+const CARD_MARGIN = 11;
+const CARD_WIDTH = width * 0.79;
+const TOTAL_CARD_WIDTH = CARD_WIDTH + CARD_MARGIN * 2; // 카드 너비 + 양쪽 마진
+
 export default function PreviewRoutinePage({ navigation }) {
-  const [routines, setRoutines] = useState([]); // 루틴 목록 상태
+  const [routineCards, setRoutineCards] = useState([]); // 루틴 카드 배열
   const [loading, setLoading] = useState(true); // 로딩 상태
+  const [currentIndex, setCurrentIndex] = useState(1); // 현재 카드 인덱스
 
   useEffect(() => {
     // TODO: 태그 기반으로 추천된 루틴 데이터를 API에서 가져와야 함
@@ -20,12 +27,19 @@ export default function PreviewRoutinePage({ navigation }) {
       try {
         // 임시 데이터
         setTimeout(() => {
-          setRoutines([
+          const dummyRoutines = [
             '아침 이불 정리하기',
             '아침 스트레칭',
             '1000보 이상 걷기',
             '일어나자마자 씻기',
             '2분 달리기',
+          ];
+
+          // 임시로 동일한 카드 3개 생성
+          setRoutineCards([
+            { id: '1', title: '기력 충전 운동 루틴', routines: dummyRoutines },
+            { id: '2', title: '기력 충전 운동 루틴', routines: dummyRoutines },
+            { id: '3', title: '기력 충전 운동 루틴', routines: dummyRoutines },
           ]);
           setLoading(false);
         }, 800);
@@ -51,37 +65,74 @@ export default function PreviewRoutinePage({ navigation }) {
     navigation.navigate('MainPage');
   };
 
+  // FlatList에서 현재 보이는 카드 감지
+  const viewConfigRef = { viewAreaCoveragePercentThreshold: 50 };
+
+  const onViewRef = useRef(({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setCurrentIndex(viewableItems[0].index);
+    }
+  });
+
+  // 카드 렌더링 함수
+  const renderRoutineCard = ({ item, index }) => (
+    <View style={styles.routineCard}>
+      <View style={styles.routineCardHeader}>
+        <Text style={styles.routineCardTitle}>{item.title}</Text>
+        
+        {/* 현재 카드일 때 체크 아이콘 표시 */}
+        <View style={styles.checkCircle}>
+          {index === currentIndex && (
+            <Image
+              source={require('../../assets/images/check.png')}
+              style={styles.checkImage}
+            />
+          )}
+        </View>
+      </View>
+
+      <View style={styles.routineList}>
+        {item.routines.map((routine, idx) => (
+          <View key={idx} style={styles.routineItem}>
+            <Text style={styles.routineItemText}>{routine}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <Text style={styles.titleText}>
-        우민님을 위한{"\n"}맛보기 루틴이 준비되었어요!{"\n"}이제 시작해볼까요?
+        우민님을 위한{'\n'}맛보기 루틴이 준비되었어요!{'\n'}이제 시작해볼까요?
       </Text>
-      <View style={styles.routineCard}>
-        <View style={styles.routineCardHeader}>
-          <Text style={styles.routineCardTitle}>기력 충전 운동 루틴</Text>
-            
-          <View style={styles.checkCircle}>
-            <Image
-              source={require('../../assets/images/check.png')}
-              style={styles.checkImage}
-            />
-          </View>
-        </View>
-        {/* 목록 로딩 */}
-        {loading ? (
+
+      {loading ? (
+        <View style={{ marginTop: 80, alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#7A73FF" />
-        ) : (
-          <ScrollView contentContainerStyle={styles.routineList}>
-            {routines.map((routine, index) => (
-              <View key={index} style={styles.routineItem}>
-                <Text style={styles.routineItemText}>{routine}</Text>
-              </View>
-            ))}
-          </ScrollView>
-        )}        
-      </View>
+        </View>
+      ) : (
+        <FlatList
+          data={routineCards}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          renderItem={renderRoutineCard}
+          contentContainerStyle={styles.cardList}
+          initialScrollIndex={1} // 가운데 카드로 시작
+          getItemLayout={(data, index) => ({
+            length: TOTAL_CARD_WIDTH,
+            offset: TOTAL_CARD_WIDTH  * index,
+            index,
+          })}
+          onViewableItemsChanged={onViewRef.current} // 현재 카드 추적
+          viewabilityConfig={viewConfigRef}
+        />
+      )}
+
       <TouchableOpacity
         style={styles.skipButton}
         onPress={handleSkip}
