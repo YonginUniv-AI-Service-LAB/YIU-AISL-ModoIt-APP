@@ -12,14 +12,17 @@ import {
 import styles from './PreviewRoutinePage.styles';
 
 const { width } = Dimensions.get('window');
-const CARD_MARGIN = 11;
-const CARD_WIDTH = width * 0.79;
-const TOTAL_CARD_WIDTH = CARD_WIDTH + CARD_MARGIN * 2; // 카드 너비 + 양쪽 마진
+
+// 스냅 효과를 위한 카드 설정
+const CARD_WIDTH = width * 0.8;
+const CARD_SPACING = (width / 375) * 20; // 반응형 간격
+const SNAP_WIDTH = CARD_WIDTH + CARD_SPACING; // 스냅 간격
 
 export default function PreviewRoutinePage({ navigation }) {
   const [routineCards, setRoutineCards] = useState([]); // 루틴 카드 배열
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [currentIndex, setCurrentIndex] = useState(1); // 현재 카드 인덱스
+  const flatListRef = useRef(null); // FlatList 참조
 
   useEffect(() => {
     // TODO: 태그 기반으로 추천된 루틴 데이터를 API에서 가져와야 함
@@ -43,7 +46,6 @@ export default function PreviewRoutinePage({ navigation }) {
           ]);
           setLoading(false);
         }, 800);
-
       } catch (error) {
         console.error('루틴 불러오기 실패:', error);
         setLoading(false);
@@ -74,12 +76,26 @@ export default function PreviewRoutinePage({ navigation }) {
     }
   });
 
+  // 스크롤 끝났을 때 스냅 효과
+  const onMomentumScrollEnd = (event) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / SNAP_WIDTH);
+
+    if (flatListRef.current && index >= 0 && index < routineCards.length) {
+      flatListRef.current.scrollToOffset({
+        offset: index * SNAP_WIDTH,
+        animated: true,
+      });
+      setCurrentIndex(index);
+    }
+  };
+
   // 카드 렌더링 함수
   const renderRoutineCard = ({ item, index }) => (
     <View style={styles.routineCard}>
       <View style={styles.routineCardHeader}>
         <Text style={styles.routineCardTitle}>{item.title}</Text>
-        
+
         {/* 현재 카드일 때 체크 아이콘 표시 */}
         <View style={styles.checkCircle}>
           {index === currentIndex && (
@@ -114,41 +130,40 @@ export default function PreviewRoutinePage({ navigation }) {
           <ActivityIndicator size="large" color="#7A73FF" />
         </View>
       ) : (
-        <FlatList
-          data={routineCards}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.id}
-          renderItem={renderRoutineCard}
-          contentContainerStyle={styles.cardList}
-          initialScrollIndex={1} // 가운데 카드로 시작
-          getItemLayout={(data, index) => ({
-            length: TOTAL_CARD_WIDTH,
-            offset: TOTAL_CARD_WIDTH  * index,
-            index,
-          })}
-          onViewableItemsChanged={onViewRef.current} // 현재 카드 추적
-          viewabilityConfig={viewConfigRef}
-        />
+        <>
+          <FlatList
+            ref={flatListRef}
+            data={routineCards}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+            renderItem={renderRoutineCard}
+            contentContainerStyle={styles.cardList}
+            initialScrollIndex={1} // 가운데 카드로 시작
+            getItemLayout={(data, index) => ({
+              length: SNAP_WIDTH,
+              offset: SNAP_WIDTH * index,
+              index,
+            })}
+            onViewableItemsChanged={onViewRef.current} // 현재 카드 추적
+            viewabilityConfig={viewConfigRef}
+            onMomentumScrollEnd={onMomentumScrollEnd} // 스냅 효과
+            decelerationRate="fast" // 빠른 감속으로 스냅 효과 향상
+            snapToInterval={SNAP_WIDTH} // 스냅 간격 설정
+            snapToAlignment="start" // 스냅 정렬 방식
+          />
+        </>
       )}
 
-      <TouchableOpacity
-        style={styles.skipButton}
-        onPress={handleSkip}
-      >
+      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
         <Text style={styles.skipText}>건너뛰기</Text>
       </TouchableOpacity>
 
       <View style={styles.skipUnderline} />
 
-      <TouchableOpacity
-        style={styles.startButton}
-        onPress={handleStart}
-      >
+      <TouchableOpacity style={styles.startButton} onPress={handleStart}>
         <Text style={styles.startButtonText}>시작하기</Text>
       </TouchableOpacity>
-
-    </View>  
+    </View>
   );
 }

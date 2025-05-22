@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, TextInput } from 'react-native';
-import styles from './EditRoutineModal.styles';
+import styles from './AddRoutineModal.styles';
 
 export default function EditRoutineModal({
   visible,
