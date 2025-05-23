@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Dimensions } from 'react-native';
 import styles from './SignUpPage.styles';
 
+import {
+  sendVerificationEmail,
+  verifyEmailCode,
+  signup,
+} from '../../api/authApi';
+
 export default function SignUpPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -9,20 +15,48 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleRequestVerification = () => {
+  const handleRequestVerification = async () => {
     console.log('인증요청 클릭됨');
-    // TODO: 이메일 인증 요청 API 연동
+    try {
+      await sendVerificationEmail(email);
+      alert('인증번호가 이메일로 전송되었습니다.');
+    } catch (error) {
+      console.error(error);
+      alert('인증 요청 실패: ' + (error.response?.data || '오류 발생'));
+    }
   };
 
-  const handleVerifyCode = () => {
-    console.log('인증확인 클릭됨');
-    // TODO: 인증번호 검증 API 연동
+  const handleVerifyCode = async () => {
+    try {
+      await verifyEmailCode(email, parseInt(verificationCode));
+      alert('인증이 완료되었습니다.');
+    } catch (error) {
+      console.error(error);
+      alert('인증 실패: ' + (error.response?.data || '오류 발생'));
+    }
   };
 
-  const handleSignUp = () => {
-    console.log('회원가입 시도');
-    // TODO: 회원가입 API 연동
-  };
+  const handleSignUp = async () => {
+  if (!name || !email || !password || !confirmPassword) {
+    alert('모든 정보를 입력해주세요.');
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert('비밀번호가 일치하지 않습니다.');
+    return;
+  }
+
+  try {
+    await signup({ name, email, password });
+    alert('회원가입이 완료되었습니다!');
+    // TODO: 로그인 페이지로 이동하거나 메인 페이지로 이동
+    // navigation.navigate('LoginPage');
+  } catch (error) {
+    console.error(error);
+    alert('회원가입 실패: ' + (error.response?.data || '오류 발생'));
+  }
+};
 
   return (
     <View style={styles.container}>
