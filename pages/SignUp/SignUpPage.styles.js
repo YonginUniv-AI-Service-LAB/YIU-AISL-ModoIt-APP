@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
 
   // 상단 "회원가입" 텍스트
   header: {
-    marginTop: height * 0.095,
+    marginTop: height * 0.12,
     fontSize: width * 0.06,
     fontWeight: '700',
     color: '#1A1A1A',
@@ -47,14 +47,21 @@ const styles = StyleSheet.create({
 
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     marginBottom: height * 0.03,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ABABAB',
+    paddingBottom: height * 0.01,
   },
 
   flexInput: {
     flex: 1,
     marginRight: width * 0.02,
-    marginBottom: height * 0.015,
+    marginBottom: 0,
+    height: inputHeight,
+    fontSize: fontSize,
+    paddingHorizontal: 3,
+    paddingVertical: 5,
   },
 
   buttonSmall: {
