@@ -1,193 +1,158 @@
+// AddRoutineModal.styles.js
 import { StyleSheet, Dimensions } from 'react-native';
+
 const { width, height } = Dimensions.get('window');
 
-// 화면 크기별 스케일링 함수
-const scale = (size) => (width / 375) * size; // iPhone X 기준
-const verticalScale = (size) => (height / 812) * size; // iPhone X 기준
-const moderateScale = (size, factor = 0.5) =>
-  size + (scale(size) - size) * factor;
+const inputHeight = height * 0.06;
+const fontSize = width * 0.05;
+const labelFontSize = width * 0.042;
+const buttonHeight = height * 0.06;
+const sidePadding = width * 0.08;
+const modalRadius = width * 0.06;
+const boxRadius = width * 0.04;
+const colonFontSize = width * 0.085;
+// 타임박스 간격: 두 박스 사이 여백
+const boxSpacing = width * 0.05;
 
-// 화면 크기 구분
-const isSmallDevice = width < 375;
-const isMediumDevice = width >= 375 && width < 414;
-const isLargeDevice = width >= 414;
-
-// 디바이스별 패딩 및 마진
-const getSpacing = () => {
-  if (isSmallDevice) return { small: 8, medium: 12, large: 16, xlarge: 20 };
-  if (isMediumDevice) return { small: 10, medium: 15, large: 20, xlarge: 25 };
-  return { small: 12, medium: 18, large: 24, xlarge: 30 };
-};
-
-const spacing = getSpacing();
-
-export default StyleSheet.create({
+const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: spacing.medium,
+    paddingHorizontal: sidePadding,
   },
+
   modalContainer: {
-    minHeight: verticalScale(400),
-    maxHeight: height * 0.7,
+    minHeight: height * 0.45,
+    maxHeight: height * 0.6,
     width: '100%',
-    maxWidth: 400, // 최대 너비 제한
+    maxWidth: 400,
     backgroundColor: '#FFFFFF',
-    borderRadius: moderateScale(24),
-    padding: spacing.xlarge,
+    borderRadius: modalRadius,
+    padding: sidePadding,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 10,
   },
+
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: verticalScale(23),
-    paddingTop: spacing.small,
+    marginBottom: height * 0.025,
+    paddingTop: height * 0.01,
   },
   modalTitle: {
-    fontSize: moderateScale(18),
+    fontSize: fontSize,
     fontWeight: '600',
     color: '#1A1A1A',
     letterSpacing: -0.2,
   },
   modalClose: {
-    fontSize: moderateScale(23),
+    fontSize: fontSize + 5,
     color: '#999999',
     fontWeight: '300',
-    padding: spacing.small, // 터치 영역 확대
+    padding: height * 0.01,
   },
   modalLabel: {
-    fontSize: moderateScale(16),
+    fontSize: labelFontSize,
     color: '#333333',
-    marginBottom: verticalScale(16),
-    marginTop: verticalScale(8),
+    marginBottom: height * 0.02,
     fontWeight: '500',
   },
+
+  // 시간 선택 영역: 박스와 콜론을 중앙 정렬
   timePicker: {
     flexDirection: 'row',
-    borderWidth: 2,
-    borderColor: '#7A73FF',
-    borderRadius: moderateScale(16),
-    overflow: 'hidden',
-    width: '100%',
-    height: verticalScale(80),
-    alignSelf: 'center',
-    marginBottom: verticalScale(32),
-    backgroundColor: '#FFFFFF',
-  },
-  timeBox: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: verticalScale(16),
-    paddingHorizontal: scale(16),
+    borderWidth: 1,
+    borderColor: '#7A73FF',
+    borderRadius: boxRadius,
+    width: '100%',
+    height: height * 0.12,
+    marginBottom: height * 0.04,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: height * 0.015,
+  },
+  // 타임박스 스타일
+  timeBox: {
+    width: width * 0.23,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: height * 0.02,
   },
   timeBoxSelected: {
     backgroundColor: '#7A73FF',
-    borderRadius: moderateScale(12),
-    margin: spacing.small,
+    borderRadius: boxRadius,
   },
   timeBoxUnselected: {
     backgroundColor: '#F0F0FF',
-    borderRadius: moderateScale(12),
-    margin: spacing.small,
+    borderRadius: boxRadius,
   },
-  timeText: {
-    fontSize: moderateScale(32),
+
+  // 콜론: 두 박스 사이 중앙에 고정
+  timeColon: {
+    fontSize: colonFontSize,
     fontWeight: '700',
+    color: '#7A73FF',
+    includeFontPadding: false,
+    marginHorizontal: boxSpacing,
+  },
+
+  // 박스 안 텍스트 원래 스타일로 복원
+  timeText: {
+    fontSize: width * 0.1,
+    fontWeight: '400',
     includeFontPadding: false,
     textAlignVertical: 'center',
   },
+
   timeTextSelected: {
     color: '#FFFFFF',
   },
+
   timeTextUnselected: {
     color: '#7A73FF',
   },
-  timeColon: {
-    position: 'absolute',
-    left: '49%',
-    top: '25%',
-    transform: [
-      { translateX: -moderateScale(12) },
-      { translateY: -moderateScale(16) },
-    ],
-    fontSize: moderateScale(32),
-    fontWeight: '700',
-    color: '#7A73FF',
-    includeFontPadding: false,
-  },
+
   modalInput: {
     width: '100%',
-    height: verticalScale(56),
-    borderWidth: 2,
+    height: inputHeight,
+    borderWidth: 1,
     borderColor: '#7A73FF',
     backgroundColor: '#FFFFFF',
-    borderRadius: moderateScale(16),
-    paddingHorizontal: spacing.large,
-    marginBottom: verticalScale(32),
-    fontSize: moderateScale(16),
+    borderRadius: boxRadius,
+    paddingHorizontal: sidePadding,
+    marginBottom: height * 0.04,
+    fontSize: width * 0.04,
     textAlign: 'center',
     color: '#1A1A1A',
-    // Focus 상태 스타일 (React Native에서는 별도 처리 필요)
   },
   modalAddButton: {
-    width: '100%',
-    backgroundColor: '#8B5CF6',
-    height: verticalScale(56),
-    borderRadius: moderateScale(16),
+    width: '90%',
+    backgroundColor: '#7A73FF',
+    height: buttonHeight,
+    borderRadius: buttonHeight / 2,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: verticalScale(8),
+    alignSelf: 'center',
+    marginTop: height * 0.01,
     shadowColor: '#8B5CF6',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
   },
   modalAddButtonText: {
     color: '#FFFFFF',
-    fontSize: moderateScale(18),
-    fontWeight: '600',
+    fontSize: width * 0.045,
+    fontWeight: '500',
     letterSpacing: -0.1,
   },
-
-  // 추가: 디바이스별 특별 스타일
-  ...(isSmallDevice && {
-    modalContainerSmall: {
-      padding: spacing.medium,
-    },
-    modalTitleSmall: {
-      fontSize: moderateScale(16),
-    },
-    timeTextSmall: {
-      fontSize: moderateScale(28),
-    },
-  }),
-
-  // 태블릿용 스타일 (width > 768)
-  ...(width > 768 && {
-    modalContainerTablet: {
-      width: '60%',
-      maxWidth: 500,
-    },
-    timePickerTablet: {
-      height: verticalScale(100),
-    },
-    timeTextTablet: {
-      fontSize: moderateScale(40),
-    },
-  }),
 });
+
+export default styles;
