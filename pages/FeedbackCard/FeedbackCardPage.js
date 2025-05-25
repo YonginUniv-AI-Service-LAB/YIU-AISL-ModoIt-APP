@@ -20,10 +20,12 @@ export default function FeedbackCardPage({ navigation }) {
       {/* 아래 카드 영역 */}
       <WhiteRoundedContainer>
         {/* 퍼센트 그래프 추가 */}
-        <View style={{ marginTop: -95 }}>
+        <View style={{ marginTop: -px(105), marginBottom: px(15) }}>
           <ProgressCircle />
         </View>
         {/* 카드 안 내용 */}
+        <Text style={styles.feedbackTitle}>오늘 루틴을 진행할 때 어땠나요?</Text>
+
         <NextButton onPress={() => navigation.navigate('FeedbackCard2')} />
       </WhiteRoundedContainer>
 

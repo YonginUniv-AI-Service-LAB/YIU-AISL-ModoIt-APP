@@ -22,7 +22,14 @@ const styles = StyleSheet.create({
     color: '#7A73FF',
     textAlign: 'center',
     letterSpacing: -0.5,
-   },
+  },
+  feedbackTitle: {
+    fontSize: px(20),
+    fontWeight: '700',
+    color: '#1A1A1A',
+    textAlign: 'center',
+    letterSpacing: -0.5,
+  },
 });
 
 export default styles;

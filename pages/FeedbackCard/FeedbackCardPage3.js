@@ -20,7 +20,7 @@ export default function FeedbackCardPage({ navigation }) {
       {/* 아래 카드 영역 */}
       <WhiteRoundedContainer>
         {/* 퍼센트 그래프 추가 */}
-        <View style={{ marginTop: -95 }}>
+        <View style={{ marginTop: -px(105), marginBottom: px(15) }}>
           <ProgressCircle />
         </View>
         {/* 카드 안 내용 */}
