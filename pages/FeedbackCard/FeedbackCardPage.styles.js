@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     top: px(75),
-    fontSize: px(24),
+    fontSize: px(26),
     fontWeight: '700',
     color: '#7A73FF',
     textAlign: 'center',

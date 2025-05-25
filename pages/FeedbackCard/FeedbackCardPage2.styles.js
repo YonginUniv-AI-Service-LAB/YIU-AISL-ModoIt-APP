@@ -13,6 +13,16 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#E8E6FF',
   },
+  headerText: {
+    position: 'absolute',
+    width: '100%',
+    top: px(75),
+    fontSize: px(26),
+    fontWeight: '700',
+    color: '#7A73FF',
+    textAlign: 'center',
+    letterSpacing: -0.5,
+   },
 });
 
 export default styles;
