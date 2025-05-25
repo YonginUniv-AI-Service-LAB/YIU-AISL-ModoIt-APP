@@ -10,7 +10,7 @@ import AddRoutineModal from '../../components/Modal/AddRoutineModal';
 import EditRoutineModal from '../../components/Modal/EditRoutineModal';
 import RoutineSection from '../../components/Routine/RoutineSection';
 
-export default function MainPage() {
+export default function MainPage({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('routine');
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -119,7 +119,7 @@ export default function MainPage() {
           <TouchableOpacity
             style={styles.endButton}
             onPress={() => {
-              /* TODO: 끝내기 */
+              navigation.navigate('FeedbackCard');
             }}
           >
             <Text style={styles.endButtonText}>끝내기</Text>

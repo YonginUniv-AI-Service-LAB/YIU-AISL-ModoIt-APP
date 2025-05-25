@@ -11,6 +11,9 @@ import SurveyImprovementPage from './pages/Survey/SurveyImprovementPage';
 import SurveyStrengthPage from './pages/Survey/SurveyStrengthPage';
 import PreviewRoutinePage from './pages/PreviewRoutine/PreviewRoutinePage';
 import MainPage from './pages/Main/MainPage';
+import FeedbackCardPage from './pages/FeedbackCard/FeedbackCardPage';
+import FeedbackCardPage2 from './pages/FeedbackCard/FeedbackCardPage2';
+import FeedbackCardPage3 from './pages/FeedbackCard/FeedbackCardPage3';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +33,9 @@ export default function App() {
         <Stack.Screen name="SurveyStrength" component={SurveyStrengthPage} />
         <Stack.Screen name="PreviewRoutine" component={PreviewRoutinePage} />
         <Stack.Screen name="MainPage" component={MainPage} />
+        <Stack.Screen name="FeedbackCard" component={FeedbackCardPage} />
+        <Stack.Screen name="FeedbackCard2" component={FeedbackCardPage2} />
+        <Stack.Screen name="FeedbackCard3" component={FeedbackCardPage3} />
       </Stack.Navigator>
     </NavigationContainer>
   );
