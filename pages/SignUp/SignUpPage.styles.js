@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   flexInput: {
     flex: 1,
     marginRight: width * 0.02,
-    marginBottom: 0,
+    marginBottom: -height * 0.011,
     height: inputHeight,
     fontSize: fontSize,
     paddingHorizontal: 3,
