@@ -9,7 +9,7 @@ export default StyleSheet.create({
   },
   pageText: {
     fontSize: width * 0.045,
-    fontWeight: '600',
+    fontWeight: '700',
     textAlign: 'center',
   },
   routineWrapper: {
@@ -21,12 +21,13 @@ export default StyleSheet.create({
   },
   listWrapper: {
     flex: 1,
+    paddingTop: height * 0.02,
   },
   endButton: {
     alignSelf: 'center',
     width: width * 0.9,
     height: height * 0.065,
-    backgroundColor: '#8E6BFF',
+    backgroundColor: '#7A73FF',
     borderRadius: (height * 0.065) / 2,
     justifyContent: 'center',
     alignItems: 'center',

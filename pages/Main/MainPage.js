@@ -94,7 +94,7 @@ export default function MainPage() {
   const renderRoutineTab = () => (
     <View style={styles.routineWrapper}>
       <WhiteRoundedContainer style={styles.whiteContainer}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
           <RoutineSection
             title="아침"
             data={grouped.morning}
