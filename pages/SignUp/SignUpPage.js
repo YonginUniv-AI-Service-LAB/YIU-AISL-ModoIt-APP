@@ -16,9 +16,11 @@ import {
   verifyEmailCode,
   signup,
 } from '../../api/authApi.js';
+/*
 console.log('▶︎ sendVerificationEmail:', sendVerificationEmail);
 console.log('▶︎ verifyEmailCode:', verifyEmailCode);
 console.log('▶︎ signup:', signup);
+*/
 
 export default function SignUpPage() {
   const [name, setName] = useState('');
