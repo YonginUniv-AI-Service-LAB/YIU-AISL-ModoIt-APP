@@ -1,7 +1,6 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
-const px = (value) => (width / 390) * value;
 
 export default StyleSheet.create({
   container: {
@@ -9,43 +8,42 @@ export default StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   purpleHeader: {
-    height: px(210),
+    height: height * 0.25, // 210 / 844 ≈ 0.25
     width: '100%',
     backgroundColor: '#E8E6FF',
   },
   headerText: {
     position: 'absolute',
     width: '100%',
-    top: px(75),
-    fontSize: px(26),
+    top: height * 0.09, // 75 / 844 ≈ 0.089
+    fontSize: width * 0.067, // 26 / 390 ≈ 0.067
     fontWeight: '700',
     color: '#7A73FF',
     textAlign: 'center',
     letterSpacing: -0.5,
   },
-
   whiteContainer: {
-    marginTop: -px(80),
-    paddingTop: px(120),
-    paddingHorizontal: px(20),
+    marginTop: height * -0.094, // 80 / 844 ≈ 0.094
+    paddingTop: height * 0.14, // 120 / 844 ≈ 0.14
+    paddingHorizontal: height * 0.023, // 20 / 844 ≈ 0.023
     flex: 1,
     alignItems: 'center', // 컨테이너 수평 중앙 정렬
   },
 
   optionsWrapper: {
     width: '100%',
-    marginTop: px(4), // ProgressCircle 아래 간격
+    marginTop: height * 0.004, // 4 / 844 ≈ 0.004
     alignItems: 'center',
   },
   optionButton: {
     width: width * 0.77,
-    height: px(49),
+    height: height * 0.06, // 49 / 844 ≈ 0.058
     borderRadius: 100,
     borderWidth: 1,
     borderColor: '#ABABAB',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: px(20),
+    marginTop: height * 0.023,
     backgroundColor: '#FFFFFF',
   },
   selectedButton: {
@@ -53,7 +51,7 @@ export default StyleSheet.create({
     borderColor: '#7A73FF',
   },
   optionText: {
-    fontSize: px(17),
+    fontSize: width * 0.043, // 17 / 390 ≈ 0.043
     fontWeight: '500',
     color: '#ABABAB',
   },
@@ -62,12 +60,12 @@ export default StyleSheet.create({
   },
 
   endButtonWrapper: {
-    marginTop: px(17), // NextButton 위치 상향
+    marginTop: height * 0.043, // NextButton 위치 상향
     alignItems: 'center',
   },
   endButtonText: {
     color: '#FFFFFF',
-    fontSize: px(16),
+    fontSize: width * 0.041, // 16 / 390 ≈ 0.041
     fontWeight: '600',
   },
 });

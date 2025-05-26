@@ -8,8 +8,7 @@ import ProgressCircle from '../../components/Graph/ProgressCircle';
 import routineStyles from '../../components/Routine/RoutineItem.styles';
 import sectionStyles from '../../components/Routine/RoutineSection.styles';
 
-const { width } = Dimensions.get('window');
-const px = (value) => (width / 390) * value;
+const { width, height } = Dimensions.get('window');
 
 export default function FeedbackCardPage({ navigation, route }) {
   // 변경된 부분: route.params에서 전달된 체크되지 않은 루틴 가져오기
@@ -25,7 +24,7 @@ export default function FeedbackCardPage({ navigation, route }) {
       {/* 아래 카드 영역 */}
       <WhiteRoundedContainer style={styles.whiteContainer}>
         {/* 퍼센트 그래프 추가 */}
-        <View style={{ marginTop: -px(105), marginBottom: px(15) }}>
+        <View style={localStyles.progressWrapper}>
           <ProgressCircle />
         </View>
 
@@ -33,7 +32,7 @@ export default function FeedbackCardPage({ navigation, route }) {
         <Text style={sectionStyles.sectionHeader}>진행하지 않은 루틴</Text>
 
         {/* 스크롤뷰로 전체 내용을 감싸고, 체크 되지 않은 루틴, NextButton도 포함 */}
-        <ScrollView contentContainerStyle={{ paddingBottom: px(100) }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: height * 0.118 }}>
           {/* ↓↓ 수정된 부분: 섹션 헤더와 아이템 렌더링 */}
           <View style={sectionStyles.sectionContainer}>
             {/* 추후 API 연결 할 때 수정할 부분 */}
@@ -85,3 +84,10 @@ export default function FeedbackCardPage({ navigation, route }) {
 //    </View>
 //  );
 //}
+
+const localStyles = StyleSheet.create({
+  progressWrapper: {
+    marginTop: -height * 0.125, // 약 -105px → 844 기준
+    marginBottom: height * 0.018, // 약 15px
+  },
+});

@@ -6,8 +6,7 @@ import NextButton from '../../components/Button/NextButton';
 import BottomTabBar from '../../components/common/BottomTabBar';
 import ProgressCircle from '../../components/Graph/ProgressCircle';
 
-const { width } = Dimensions.get('window');
-const px = (value) => (width / 390) * value;
+const { width, height } = Dimensions.get('window');
 
 export default function FeedbackCardPage({ navigation, route }) {
   // 수정된 부분: MainPage에서 전달된 체크되지 않은 루틴 받기
@@ -23,7 +22,7 @@ export default function FeedbackCardPage({ navigation, route }) {
       {/* 아래 카드 영역 */}
       <WhiteRoundedContainer>
         {/* 퍼센트 그래프 추가 */}
-        <View style={{ marginTop: -px(105), marginBottom: px(15) }}>
+        <View style={localStyles.progressWrapper}>
           <ProgressCircle />
         </View>
         {/* 카드 안 내용 */}
@@ -43,3 +42,10 @@ export default function FeedbackCardPage({ navigation, route }) {
     </View>
   );
 }
+
+const localStyles = StyleSheet.create({
+  progressWrapper: {
+    marginTop: -height * 0.125, // 약 -105px → 844 기준
+    marginBottom: height * 0.018, // 약 15px
+  },
+});
