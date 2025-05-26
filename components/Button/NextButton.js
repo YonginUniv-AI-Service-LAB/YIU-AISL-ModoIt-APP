@@ -13,14 +13,14 @@ export default function NextButton({ onPress }) {
 
 const styles = StyleSheet.create({
   button: {
-    width: width * 0.8,         // 너비의 80%
+    width: width * 0.78,
     height: width * 0.13,
     backgroundColor: '#7A73FF',
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
-    marginTop: width * 0.06, 
+    marginTop: width * 0.053, 
   },
   text: {
     fontSize: width * 0.047,

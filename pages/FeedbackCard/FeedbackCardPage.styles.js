@@ -5,7 +5,7 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: '#FFFFFF',
   },
   purpleHeader: {
     height: height * 0.25, // 210 / 844 ≈ 0.25
@@ -23,11 +23,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   feedbackTitle: {
-    fontSize: width * 0.051, // 20 / 390 ≈ 0.051
+    fontSize: width * 0.053,
     fontWeight: '700',
     color: '#1A1A1A',
     textAlign: 'center',
     letterSpacing: -0.5,
+    marginBottom: width * 0.04, // 20 / 390 ≈ 0.051
   },
 });
 
