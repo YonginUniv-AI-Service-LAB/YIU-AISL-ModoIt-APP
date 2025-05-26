@@ -15,7 +15,10 @@ import {
   sendVerificationEmail,
   verifyEmailCode,
   signup,
-} from '../../api/authApi';
+} from '../../api/authApi.js';
+console.log('▶︎ sendVerificationEmail:', sendVerificationEmail);
+console.log('▶︎ verifyEmailCode:', verifyEmailCode);
+console.log('▶︎ signup:', signup);
 
 export default function SignUpPage() {
   const [name, setName] = useState('');
@@ -27,7 +30,7 @@ export default function SignUpPage() {
   const handleRequestVerification = async () => {
     console.log('인증요청 클릭됨');
     try {
-      await sendVerificationEmail(email);
+      const res = await sendVerificationEmail(email);
       alert('인증번호가 이메일로 전송되었습니다.');
     } catch (error) {
       console.error(error);
