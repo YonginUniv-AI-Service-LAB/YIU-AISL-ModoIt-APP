@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: width * 0.075,
     borderTopRightRadius: width * 0.075,
     marginTop: -height * 0.03,
-    paddingTop: height * 0.05,
+    paddingTop: height * 0.03,
     paddingHorizontal: width * 0.05,
   },
 })
