@@ -16,8 +16,9 @@ import sectionStyles from '../../components/Routine/RoutineSection.styles';
 
 const { width, height } = Dimensions.get('window');
 
-export default function FeedbackCardPage3({ navigation }) {
+export default function FeedbackCardPage3({ navigation, route }) {
   // 임시 데이터
+  const { unchecked, checked } = route.params;
   const [options] = useState([
     '2분동안 명상하기',
     '10분동안 달리기',
@@ -68,7 +69,7 @@ export default function FeedbackCardPage3({ navigation }) {
       setSubmitting(false);
     }
     */
-    navigation.navigate('FeedbackCard4', { recommendation: selected });
+    navigation.navigate('RoutineDelete', { unchecked, checked, selected });
   };
 
   return (

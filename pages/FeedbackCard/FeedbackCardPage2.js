@@ -12,7 +12,7 @@ const { width, height } = Dimensions.get('window');
 
 export default function FeedbackCardPage({ navigation, route }) {
   // 변경된 부분: route.params에서 전달된 체크되지 않은 루틴 가져오기
-  const { unchecked } = route.params;
+  const { unchecked, checked } = route.params;
 
   return (
     <View style={styles.container}>
@@ -50,7 +50,11 @@ export default function FeedbackCardPage({ navigation, route }) {
           </View>
           {/* 다음 버튼 */}
           <View style={styles.endButtonWrapper}>
-            <NextButton onPress={() => navigation.navigate('FeedbackCard3')}>
+            <NextButton
+              onPress={() =>
+                navigation.navigate('FeedbackCard3', { unchecked, checked })
+              }
+            >
               <Text style={styles.endButtonText}>다음</Text>
             </NextButton>
           </View>

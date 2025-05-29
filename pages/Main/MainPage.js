@@ -121,7 +121,8 @@ export default function MainPage({ navigation }) {
             onPress={() => {
               // 수정된 부분: 체크되지 않은 루틴만 필터링하여 첫 번째 피드백 화면으로 전달
               const unchecked = routines.filter((item) => !item.checked);
-              navigation.navigate('FeedbackCard', { unchecked });
+              const checked = routines.filter((item) => item.checked);
+              navigation.navigate('FeedbackCard', { unchecked, checked });
               /* 기존 코드
               navigation.navigate('FeedbackCard');
               */

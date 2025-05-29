@@ -11,7 +11,7 @@ const { width, height } = Dimensions.get('window');
 
 export default function FeedbackCardPage({ navigation, route }) {
   // 수정된 부분: MainPage에서 전달된 체크되지 않은 루틴 받기
-  const { unchecked } = route.params;
+  const { unchecked, checked } = route.params;
   const [emotionLevel, setEmotionLevel] = useState(null);
   const [situationLevel, setSituationLevel] = useState(null);
 
@@ -51,7 +51,7 @@ export default function FeedbackCardPage({ navigation, route }) {
         <NextButton
           onPress={() =>
             // 수정된 부분: 체크되지 않은 루틴을 다음 화면으로 전달
-            navigation.navigate('FeedbackCard2', { unchecked })
+            navigation.navigate('FeedbackCard2', { unchecked, checked })
           }
         />
       </WhiteRoundedContainer>
