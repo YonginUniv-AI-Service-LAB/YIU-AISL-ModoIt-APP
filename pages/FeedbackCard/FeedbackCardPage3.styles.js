@@ -59,13 +59,13 @@ export default StyleSheet.create({
     color: '#7A73FF',
   },
 
-  endButtonWrapper: {
-    marginTop: height * 0.043, // NextButton 위치 상향
-    alignItems: 'center',
-  },
-  endButtonText: {
-    color: '#FFFFFF',
-    fontSize: width * 0.041, // 16 / 390 ≈ 0.041
-    fontWeight: '600',
-  },
+  // endButtonWrapper: {
+  //   marginTop: height * 0.043, // NextButton 위치 상향
+  //   alignItems: 'center',
+  // },
+  // endButtonText: {
+  //   color: '#FFFFFF',
+  //   fontSize: width * 0.041, // 16 / 390 ≈ 0.041
+  //   fontWeight: '600',
+  // },
 });

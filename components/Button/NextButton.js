@@ -13,6 +13,8 @@ export default function NextButton({ onPress }) {
 
 const styles = StyleSheet.create({
   button: {
+    position: 'absolute',
+    bottom: width * 0.33,
     width: width * 0.78,
     height: width * 0.13,
     backgroundColor: '#7A73FF',
@@ -20,7 +22,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
-    marginTop: width * 0.053, 
+    // marginTop: width * 0.053,
   },
   text: {
     fontSize: width * 0.047,

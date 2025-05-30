@@ -114,20 +114,18 @@ export default function FeedbackCardPage3({ navigation, route }) {
             ))}
           </View>
         )}
-
-        <View style={styles.endButtonWrapper}>
-          <NextButton
-            onPress={handleNext}
-            disabled={selected.length === 0 || loading || submitting}
-          >
-            {submitting ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.endButtonText}>다음</Text>
-            )}
-          </NextButton>
-        </View>
       </WhiteRoundedContainer>
+      {/* 다음 버튼 */}
+      <NextButton
+        onPress={handleNext}
+        disabled={selected.length === 0 || loading || submitting}
+      >
+        {submitting ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.endButtonText}>다음</Text>
+        )}
+      </NextButton>
 
       <BottomTabBar currentTab="routine" onTabPress={() => {}} />
     </View>

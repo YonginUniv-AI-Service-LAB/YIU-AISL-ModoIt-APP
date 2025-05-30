@@ -26,17 +26,17 @@ const styles = StyleSheet.create({
     // 수정된 부분: MainPage.styles의 whiteContainer 적용
     flex: 1,
   },
-  endButtonWrapper: {
-    alignSelf: 'center',
-    width: width * 0.9,
-    marginVertical: height * 0.02,
-  },
-  endButtonText: {
-    color: '#FFFFFF', // MainPage 의 endButtonText
-    fontSize: width * 0.045,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
+  // endButtonWrapper: {
+  //   alignSelf: 'center',
+  //   width: width * 0.9,
+  //   marginVertical: height * 0.02,
+  // },
+  // endButtonText: {
+  //   color: '#FFFFFF', // MainPage 의 endButtonText
+  //   fontSize: width * 0.045,
+  //   fontWeight: '600',
+  //   textAlign: 'center',
+  // },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',

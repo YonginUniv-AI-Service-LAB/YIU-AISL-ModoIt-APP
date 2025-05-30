@@ -32,10 +32,13 @@ export default function FeedbackCardPage({ navigation, route }) {
         <Text style={sectionStyles.sectionHeader}>진행하지 않은 루틴</Text>
 
         {/* 스크롤뷰로 전체 내용을 감싸고, 체크 되지 않은 루틴, NextButton도 포함 */}
-        <ScrollView contentContainerStyle={{ paddingBottom: height * 0.118 }}>
+        <ScrollView
+          style={{ maxHeight: height * 0.37 }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        >
           {/* ↓↓ 수정된 부분: 섹션 헤더와 아이템 렌더링 */}
           <View style={sectionStyles.sectionContainer}>
-            {/* 추후 API 연결 할 때 수정할 부분 */}
+            {/* TODO: 추후 API 연결 할 때 수정할 부분 */}
             {unchecked.map((item) => (
               <View key={item.id} style={routineStyles.itemRow}>
                 <View style={routineStyles.routineBox}>
@@ -48,18 +51,16 @@ export default function FeedbackCardPage({ navigation, route }) {
               </View>
             ))}
           </View>
-          {/* 다음 버튼 */}
-          <View style={styles.endButtonWrapper}>
-            <NextButton
-              onPress={() =>
-                navigation.navigate('FeedbackCard3', { unchecked, checked })
-              }
-            >
-              <Text style={styles.endButtonText}>다음</Text>
-            </NextButton>
-          </View>
         </ScrollView>
       </WhiteRoundedContainer>
+
+      {/* 다음 버튼 */}
+      <NextButton
+        onPress={() =>
+          navigation.navigate('FeedbackCard3', { unchecked, checked })
+        }
+      >
+      </NextButton>
 
       <BottomTabBar currentTab="routine" onTabPress={() => {}} />
     </View>

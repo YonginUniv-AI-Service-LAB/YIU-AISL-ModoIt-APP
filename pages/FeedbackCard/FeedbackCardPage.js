@@ -47,14 +47,21 @@ export default function FeedbackCardPage({ navigation, route }) {
           onSelect={setSituationLevel}
         />
 
-        {/* 다음 버튼 */}
+        {/* 다음 버튼
         <NextButton
           onPress={() =>
             // 수정된 부분: 체크되지 않은 루틴을 다음 화면으로 전달
             navigation.navigate('FeedbackCard2', { unchecked, checked })
           }
-        />
+        /> */}
       </WhiteRoundedContainer>
+      {/* 다음 버튼 */}
+      <NextButton
+        onPress={() =>
+          // 수정된 부분: 체크되지 않은 루틴을 다음 화면으로 전달
+          navigation.navigate('FeedbackCard2', { unchecked, checked })
+        }
+      />
 
       <BottomTabBar currentTab="routine" onTabPress={() => {}} />
     </View>
