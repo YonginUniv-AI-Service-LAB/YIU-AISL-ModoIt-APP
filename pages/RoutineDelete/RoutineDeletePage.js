@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react';
+// RoutineDeletePage.js
+
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  View,
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   Dimensions,
+  StyleSheet,
+  View,
 } from 'react-native';
+import {
+  Swipeable,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import styles from './RoutineDeletePage.styles';
 import NextButton from '../../components/Button/FinishButton';
 
@@ -15,7 +21,7 @@ const { width, height } = Dimensions.get('window');
 export default function RoutineDeletePage({ navigation, route }) {
   const { unchecked = [], checked = [], selected = [] } = route.params || {};
 
-  // 문자열 배열/string → {id, time, title} 변환
+  // 문자열 배열(string) → { id, time, title } 형식으로 변환
   const normalize = (list) =>
     list.map((it, idx) => {
       if (typeof it === 'string') {
@@ -29,24 +35,21 @@ export default function RoutineDeletePage({ navigation, route }) {
     });
 
   const [items, setItems] = useState([]);
-  const [openState, setOpenState] = useState({});
-  const [selectedItems, setSelectedItems] = useState(new Set()); // 선택된 아이템들을 관리
+  const [selectedItems, setSelectedItems] = useState(new Set()); // 선택된 아이템 관리
 
   useEffect(() => {
-    // MainPage에서 넘긴 두 그룹을 합쳐서 렌더링
+    // MainPage에서 넘어온 두 그룹을 합쳐서 렌더링
     const normalizedItems = normalize([...unchecked, ...checked, ...selected]);
     setItems(normalizedItems);
-    setOpenState({});
-    // 첫 번째 아이템을 기본으로 선택
     setSelectedItems(new Set());
-  }, [unchecked, checked]);
+  }, [unchecked, checked, selected]);
 
   const toMins = (t) => {
     const [h, m] = (t || '').split(':').map((n) => parseInt(n, 10) || 0);
     return h * 60 + m;
   };
 
-  // 시간대별 그룹핑
+  // 시간대별 그룹핑 (아침, 점심, 저녁)
   const grouped = { morning: [], lunch: [], evening: [] };
   items.forEach((it) => {
     const mins = toMins(it.time);
@@ -55,7 +58,17 @@ export default function RoutineDeletePage({ navigation, route }) {
     else grouped.evening.push(it);
   });
 
-  const toggle = (id) => setOpenState((prev) => ({ ...prev, [id]: !prev[id] }));
+  // 선택 토글 함수
+  const toggleSelection = (id) => {
+    setSelectedItems((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) newSet.delete(id);
+      else newSet.add(id);
+      return newSet;
+    });
+  };
+
+  // 삭제 함수
   const remove = (id) => {
     setItems((prev) => prev.filter((i) => i.id !== id));
     setSelectedItems((prev) => {
@@ -65,49 +78,73 @@ export default function RoutineDeletePage({ navigation, route }) {
     });
   };
 
-  // 아이템 선택/해제 토글
-  const toggleSelection = (id) => {
-    setSelectedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
+  // 각 루틴 아이템 컴포넌트
   const Item = ({ item }) => {
-    const isOpen = !!openState[item.id];
     const isSelected = selectedItems.has(item.id);
+
+    // Swipeable ref: 문턱 넘었을 때 상태 업데이트용
+    const swipeableRef = useRef(null);
 
     return (
       <View style={styles.swipeContainer}>
-        <TouchableOpacity
-          style={[
-            styles.routineBox,
-            isSelected && styles.routineBoxSelected,
-            isSelected && styles.routineBoxSwiped, // 선택되면 자동으로 스와이프
-          ]}
-          onPress={() => toggleSelection(item.id)}
-          activeOpacity={0.7}
+        <GestureHandlerRootView
+          style={{ flex: 1, backgroundColor: 'transparent' }}
         >
-          <View style={styles.itemTextContainer}>
-            {!!item.time && (
-              <Text
-                style={[styles.itemTime, isSelected && styles.itemTimeSelected]}
-              >
-                {item.time}
-              </Text>
-            )}
-            <Text
-              style={[styles.itemTitle, isSelected && styles.itemTitleSelected]}
+          <Swipeable
+            ref={swipeableRef}
+            friction={2}
+            // 왼쪽으로 당겨 문턱(threshold)을 넘어 “열릴 준비” 단계에 진입했을 때
+            onSwipeableRightWillOpen={() => {
+              if (!isSelected) {
+                toggleSelection(item.id);
+              }
+            }}
+            // 오른쪽으로 당겨 문턱을 넘어 “열릴 준비” 단계에 진입했을 때
+            onSwipeableLeftWillOpen={() => {
+              if (isSelected) {
+                toggleSelection(item.id);
+              }
+            }}
+            // 액션을 실제로 보여주는 영역(너비 만큼만 두고, 추가 아이콘 같은 내용은 없음)
+            renderRightActions={() => <View style={{ width: width * 0.15 }} />}
+            renderLeftActions={() => <View style={{ width: width * 0.15 }} />}
+            // 사용자가 손을 떼면 자동으로 닫아 줌(원래 위치로 복귀)
+            onSwipeableOpen={() => {
+              swipeableRef.current?.close();
+            }}
+          >
+            {/* 터치로는 선택되지 않도록 View로 감쌈 */}
+            <View
+              style={[
+                styles.routineBox,
+                isSelected && styles.routineBoxSelected,
+              ]}
             >
-              {item.title}
-            </Text>
-          </View>
-        </TouchableOpacity>
+              <View style={styles.itemTextContainer}>
+                {!!item.time && (
+                  <Text
+                    style={[
+                      styles.itemTime,
+                      isSelected && styles.itemTimeSelected,
+                    ]}
+                  >
+                    {item.time}
+                  </Text>
+                )}
+                <Text
+                  style={[
+                    styles.itemTitle,
+                    isSelected && styles.itemTitleSelected,
+                  ]}
+                >
+                  {item.title}
+                </Text>
+              </View>
+            </View>
+          </Swipeable>
+        </GestureHandlerRootView>
+
+        {/* 선택된 상태일 때만 삭제 버튼 노출 */}
         {isSelected && (
           <TouchableOpacity
             style={styles.deleteButton}
