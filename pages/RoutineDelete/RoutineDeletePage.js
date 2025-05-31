@@ -147,7 +147,7 @@ export default function RoutineDeletePage({ navigation, route }) {
             {renderSection('점심', grouped.lunch)}
             {renderSection('저녁', grouped.evening)}
             <View style={styles.endButtonWrapper}>
-              <NextButton onPress={() => navigation.navigate('SampleRoutine')}>
+              <NextButton onPress={() => navigation.navigate('MainPage')}>
                 <Text style={styles.endButtonText}>완료</Text>
               </NextButton>
             </View>
