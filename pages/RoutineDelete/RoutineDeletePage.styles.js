@@ -8,7 +8,7 @@ export default StyleSheet.create({
   },
   headerText: {
     width: '100%',
-    marginTop: height * 0.08,
+    marginTop: height * 0.1,
     fontSize: width * 0.067,
     fontWeight: '700',
     color: '#7A73FF',
@@ -17,7 +17,7 @@ export default StyleSheet.create({
   },
   whiteContainer: {
     flex: 1,
-    paddingTop: height * 0.01,
+    paddingTop: height * 0.03,
     paddingLeft: 0,
     paddingRight: 0,
   },
@@ -25,16 +25,17 @@ export default StyleSheet.create({
     marginTop: height * 0.03,
   },
   sectionHeader: {
-    fontSize: width * 0.047,
+    fontSize: width * 0.045,
     fontWeight: '600',
-    color: '#333333',
-    marginBottom: height * 0.016,
+    color: '#1A1A1A',
+    marginBottom: height * 0.012,
     paddingLeft: width * 0.12,
   },
   sectionContainer: {
     paddingHorizontal: 0,
   },
   swipeContainer: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: height * 0.01,
@@ -46,7 +47,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: width * 0.025,
+    borderRadius: width * 0.035,
     paddingVertical: height * 0.023,
     paddingHorizontal: width * 0.04,
     borderWidth: 1,
@@ -67,19 +68,8 @@ export default StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-    // 선택된 루틴은 왼쪽으로 이동 (왼쪽 여백 제거, 오른쪽 여백 유지)
-    marginLeft: 0,
+    marginLeft: -width * 0.04,
     marginRight: width * 0.05,
-  },
-  leftBar: {
-    width: width * 0.008,
-    height: height * 0.035,
-    backgroundColor: '#7A73FF',
-    borderRadius: width * 0.004,
-    marginRight: width * 0.038,
-  },
-  leftBarSelected: {
-    backgroundColor: '#FFFFFF',
   },
   itemTextContainer: {
     flex: 1,
@@ -88,9 +78,10 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
   },
   itemTime: {
-    fontSize: width * 0.033,
+    fontSize: width * 0.041,
     fontWeight: '500',
     color: '#7A73FF',
+    marginLeft: width * 0.018,
     marginRight: width * 0.04,
     marginBottom: 0,
   },
@@ -117,7 +108,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-    marginLeft: width * 0.03, // 루틴 박스와의 간격
+    marginRight: width * 0.12, // 루틴 박스와의 간격
   },
   deleteButtonText: {
     color: '#FFFFFF',
@@ -129,7 +120,7 @@ export default StyleSheet.create({
   endButtonWrapper: {
     alignSelf: 'center',
     width: '90%',
-    marginTop: height * 0.04,
+    marginTop: height * 0.01,
     marginBottom: height * 0.02,
   },
   endButtonText: {

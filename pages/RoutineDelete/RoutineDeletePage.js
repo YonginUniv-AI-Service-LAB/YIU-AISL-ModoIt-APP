@@ -38,9 +38,7 @@ export default function RoutineDeletePage({ navigation, route }) {
     setItems(normalizedItems);
     setOpenState({});
     // 첫 번째 아이템을 기본으로 선택
-    if (normalizedItems.length > 0) {
-      setSelectedItems(new Set([normalizedItems[0].id]));
-    }
+    setSelectedItems(new Set());
   }, [unchecked, checked]);
 
   const toMins = (t) => {
@@ -149,7 +147,7 @@ export default function RoutineDeletePage({ navigation, route }) {
             {renderSection('점심', grouped.lunch)}
             {renderSection('저녁', grouped.evening)}
             <View style={styles.endButtonWrapper}>
-              <NextButton onPress={() => navigation.popToTop()}>
+              <NextButton onPress={() => navigation.navigate('SampleRoutine')}>
                 <Text style={styles.endButtonText}>완료</Text>
               </NextButton>
             </View>
