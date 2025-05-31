@@ -15,6 +15,7 @@ import FeedbackCardPage from './pages/FeedbackCard/FeedbackCardPage';
 import FeedbackCardPage2 from './pages/FeedbackCard/FeedbackCardPage2';
 import FeedbackCardPage3 from './pages/FeedbackCard/FeedbackCardPage3';
 import RoutineDeletePage from './pages/RoutineDelete/RoutineDeletePage';
+import SampleRoutinePage from './pages/SampleRoutine/SampleRoutinePage';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,7 @@ export default function App() {
         <Stack.Screen name="FeedbackCard2" component={FeedbackCardPage2} />
         <Stack.Screen name="FeedbackCard3" component={FeedbackCardPage3} />
         <Stack.Screen name="RoutineDelete" component={RoutineDeletePage} />
+        <Stack.Screen name="SampleRoutine" component={SampleRoutinePage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

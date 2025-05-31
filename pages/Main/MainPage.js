@@ -185,7 +185,16 @@ export default function MainPage({ navigation }) {
         }}
       />
       <FloatingActionButton onPress={() => setAddModalVisible(true)} />
-      <BottomTabBar currentTab={selectedTab} onTabPress={setSelectedTab} />
+      <BottomTabBar
+        currentTab={selectedTab}
+        onTabPress={(tab) => {
+          if (tab === 'sample') {
+            navigation.navigate('SampleRoutine'); // 새 페이지로 이동
+          } else {
+            setSelectedTab(tab); // 기존처럼 내부 콘텐츠만 변경
+          }
+        }}
+      />
     </View>
   );
 }

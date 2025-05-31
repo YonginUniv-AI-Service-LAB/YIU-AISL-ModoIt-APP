@@ -3,20 +3,16 @@ import { Dimensions } from 'react-native';
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   FlatList,
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
 import styles from './PreviewRoutinePage.styles';
+import RoutinePreviewCard from '../../components/Card/RoutinePreviewCard';
+import { SNAP_WIDTH } from '../../components/Card/RoutinePreviewCard.styles';
 
 const { width } = Dimensions.get('window');
-
-// 스냅 효과를 위한 카드 설정
-const CARD_WIDTH = width * 0.8;
-const CARD_SPACING = (width / 375) * 20; // 반응형 간격
-const SNAP_WIDTH = CARD_WIDTH + CARD_SPACING; // 스냅 간격
 
 export default function PreviewRoutinePage({ navigation }) {
   const [routineCards, setRoutineCards] = useState([]); // 루틴 카드 배열
@@ -90,33 +86,6 @@ export default function PreviewRoutinePage({ navigation }) {
     }
   };
 
-  // 카드 렌더링 함수
-  const renderRoutineCard = ({ item, index }) => (
-    <View style={styles.routineCard}>
-      <View style={styles.routineCardHeader}>
-        <Text style={styles.routineCardTitle}>{item.title}</Text>
-
-        {/* 현재 카드일 때 체크 아이콘 표시 */}
-        <View style={styles.checkCircle}>
-          {index === currentIndex && (
-            <Image
-              source={require('../../assets/images/check.png')}
-              style={styles.checkImage}
-            />
-          )}
-        </View>
-      </View>
-
-      <View style={styles.routineList}>
-        {item.routines.map((routine, idx) => (
-          <View key={idx} style={styles.routineItem}>
-            <Text style={styles.routineItemText}>{routine}</Text>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -130,29 +99,33 @@ export default function PreviewRoutinePage({ navigation }) {
           <ActivityIndicator size="large" color="#7A73FF" />
         </View>
       ) : (
-        <>
-          <FlatList
-            ref={flatListRef}
-            data={routineCards}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            renderItem={renderRoutineCard}
-            contentContainerStyle={styles.cardList}
-            initialScrollIndex={1} // 가운데 카드로 시작
-            getItemLayout={(data, index) => ({
-              length: SNAP_WIDTH,
-              offset: SNAP_WIDTH * index,
-              index,
-            })}
-            onViewableItemsChanged={onViewRef.current} // 현재 카드 추적
-            viewabilityConfig={viewConfigRef}
-            onMomentumScrollEnd={onMomentumScrollEnd} // 스냅 효과
-            decelerationRate="fast" // 빠른 감속으로 스냅 효과 향상
-            snapToInterval={SNAP_WIDTH} // 스냅 간격 설정
-            snapToAlignment="start" // 스냅 정렬 방식
-          />
-        </>
+        <FlatList
+          ref={flatListRef}
+          data={routineCards}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <RoutinePreviewCard
+              item={item}
+              index={index}
+              currentIndex={currentIndex}
+            />
+          )}
+          contentContainerStyle={styles.cardList}
+          initialScrollIndex={1}
+          getItemLayout={(data, index) => ({
+            length: SNAP_WIDTH,
+            offset: SNAP_WIDTH * index,
+            index,
+          })}
+          onViewableItemsChanged={onViewRef.current}
+          viewabilityConfig={viewConfigRef}
+          onMomentumScrollEnd={onMomentumScrollEnd}
+          decelerationRate="fast"
+          snapToInterval={SNAP_WIDTH}
+          snapToAlignment="start"
+        />
       )}
 
       <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
