@@ -75,7 +75,7 @@ export default function MainPage({ navigation }) {
     d.setDate(d.getDate() + i);
     return d;
   });
-  const currentMonth = baseDate.getMonth() + 1;
+  const currentMonth = today.getMonth() + 1;
 
   // 시간별 그룹핑
   const grouped = { morning: [], lunch: [], evening: [] };
