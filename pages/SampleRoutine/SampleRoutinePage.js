@@ -127,26 +127,24 @@ export default function SampleRoutinePage({ navigation }) {
         </View>
       ) : (
         <View style={styles.routinePreviewContainer}>
-          <RoutinePreviewCard 
-            item={routineData}
-            index={0}
-            currentIndex={0}
-          />
+          <RoutinePreviewCard item={routineData} index={0} currentIndex={0} />
         </View>
       )}
 
       {/* 추가하기 버튼 */}
-      <AddButton onPress={() => {
-        console.log('추가하기 버튼 눌림');
-        // TODO: API 연결 시 수정 필요 - 실제 루틴 추가 API 호출
-      }} />
+      <AddButton
+        onPress={() => {
+          console.log('추가하기 버튼 눌림');
+          // TODO: API 연결 시 수정 필요 - 실제 루틴 추가 API 호출
+        }}
+      />
 
       {/* 하단 탭 */}
       <BottomTabBar
         currentTab="sample"
         onTabPress={(tab) => {
           if (tab === 'routine') navigation.navigate('Main');
-          else if (tab === 'feedback') navigation.navigate('FeedbackCard');
+          else if (tab === 'feedback') navigation.navigate('FeedbackCalendar');
         }}
       />
     </View>

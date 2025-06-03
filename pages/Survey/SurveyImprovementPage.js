@@ -47,7 +47,7 @@ export default function SurveyImprovementPage({ navigation }) {
       <TouchableOpacity
         style={styles.skipButton}
         onPress={() => {
-          navigation.navigate('MainPage');
+          navigation.navigate('Main');
         }}
       >
         <Text style={styles.skipText}>건너뛰기</Text>

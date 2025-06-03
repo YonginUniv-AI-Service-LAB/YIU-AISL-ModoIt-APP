@@ -17,6 +17,7 @@ import FeedbackCardPage2 from './pages/FeedbackCard/FeedbackCardPage2';
 import FeedbackCardPage3 from './pages/FeedbackCard/FeedbackCardPage3';
 import RoutineDeletePage from './pages/RoutineDelete/RoutineDeletePage';
 import SampleRoutinePage from './pages/SampleRoutine/SampleRoutinePage';
+import FeedbackCalendarPage from './pages/FeedbackCard/FeedbackCalendarPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,12 +36,16 @@ export default function App() {
         />
         <Stack.Screen name="SurveyStrength" component={SurveyStrengthPage} />
         <Stack.Screen name="PreviewRoutine" component={PreviewRoutinePage} />
-        <Stack.Screen name="MainPage" component={MainPage} />
+        <Stack.Screen name="Main" component={MainPage} />
         <Stack.Screen name="FeedbackCard" component={FeedbackCardPage} />
         <Stack.Screen name="FeedbackCard2" component={FeedbackCardPage2} />
         <Stack.Screen name="FeedbackCard3" component={FeedbackCardPage3} />
         <Stack.Screen name="RoutineDelete" component={RoutineDeletePage} />
         <Stack.Screen name="SampleRoutine" component={SampleRoutinePage} />
+        <Stack.Screen
+          name="FeedbackCalendar"
+          component={FeedbackCalendarPage}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
