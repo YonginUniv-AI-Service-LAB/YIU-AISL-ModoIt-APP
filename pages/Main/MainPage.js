@@ -185,14 +185,12 @@ export default function MainPage({ navigation }) {
         }}
       />
       <FloatingActionButton onPress={() => setAddModalVisible(true)} />
+      {/* 하단 탭 */}
       <BottomTabBar
-        currentTab={selectedTab}
+        currentTab="routine"
         onTabPress={(tab) => {
-          if (tab === 'sample') {
-            navigation.navigate('SampleRoutine'); // 새 페이지로 이동
-          } else {
-            setSelectedTab(tab); // 기존처럼 내부 콘텐츠만 변경
-          }
+          if (tab === 'sample') navigation.navigate('SampleRoutine');
+          else if (tab === 'feedback') navigation.navigate('FeedbackCalendar');
         }}
       />
     </View>
