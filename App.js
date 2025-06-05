@@ -18,6 +18,7 @@ import FeedbackCardPage3 from './pages/FeedbackCard/FeedbackCardPage3';
 import RoutineDeletePage from './pages/RoutineDelete/RoutineDeletePage';
 import SampleRoutinePage from './pages/SampleRoutine/SampleRoutinePage';
 import FeedbackCalendarPage from './pages/FeedbackCard/FeedbackCalendarPage';
+import ResetPasswordPage from './pages/PasswordReset/ResetPasswordPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,7 @@ export default function App() {
           name="FeedbackCalendar"
           component={FeedbackCalendarPage}
         />
+        <Stack.Screen name="ResetPassword" component={ResetPasswordPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
