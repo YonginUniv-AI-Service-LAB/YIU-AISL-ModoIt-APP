@@ -53,7 +53,8 @@ export default function ResetPasswordPage({ navigation }) {
       alert('인증 실패: ' + (error.response?.data || '오류 발생'));
     }
   };
-
+  
+  // 새 비밀번호 설정
   const handleSubmitNewPassword = async () => {
     if (!email || !verificationCode || !newPassword || !confirmPassword) {
       alert('모든 정보를 입력해주세요.');

@@ -7,26 +7,42 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import styles from './LoginPage.styles';
+import { login } from '../../api/authApi';
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    console.log('이메일:', email);
-    console.log('비밀번호:', password);
-    // TODO 백엔드 API 연결
-    // 지금은 로그인 성공 시 사전조사 시작 페이지로 이동
-    navigation.navigate('SurveyIntro');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert('이메일과 비밀번호를 모두 입력해주세요.');
+      return;
+    }
+
+    try {
+      const response = await login({ email, password });
+
+      // 로그인 성공 시 처리
+      console.log('로그인에 성공:', response.data);
+
+      // TODO: 백엔드에서 isFirstLogin 여부를 반환하지 않는다면, 임시로 SurveyIntro로 이동
+      navigation.navigate('SurveyIntro');
+
+      // 만약 메인 페이지로 보내고 싶으면
+      // navigation.navigate('Main');
+    } catch (error) {
+      console.error('로그인 실패:', error.response?.data || error.message);
+      alert('로그인 실패: ' + (error.response?.data || '오류가 발생했습니다.'));
+    }
   };
 
+
   const handleNavigateToSignUp = () => {
-    navigation.navigate('SignUp'); // 회원가입 페이지로 이동
+    navigation.navigate('SignUp');
   };
 
   const handleNavigateToResetPassword = () => {
-    // TODO: 비밀번호 재설정 페이지 구현 후 연결
-    navigation.navigate('ResetPassword'); // 추후 해당 페이지 생성 필요
+    navigation.navigate('ResetPassword');
   };
 
   return (

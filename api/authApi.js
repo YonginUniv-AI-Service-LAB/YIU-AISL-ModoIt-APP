@@ -30,3 +30,10 @@ export const resetPassword = ({ email, authNum, password }) => {
     password,
   });
 };
+
+export const login = ({ email, password }) => {
+  return axios.post(`${BASE_URL}/login`, {
+    email,
+    password,
+  });
+};
