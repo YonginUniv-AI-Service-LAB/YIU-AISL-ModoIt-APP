@@ -11,12 +11,12 @@ import {
 } from 'react-native';
 import styles from './ResetPasswordPage.styles';
 
-// ─── 실제 API를 연결할 때 아래 import를 해제하고 사용하세요 ───
-// import {
-//   requestResetCode,    // 이메일로 인증번호 요청 API
-//   verifyResetCode,     // 인증번호 확인 API
-//   resetPassword,       // 비밀번호 재설정 API
-// } from '../../api/authApi';
+// API 함수들 임포트
+import {
+  sendVerificationEmail,    // 이메일로 인증번호 요청 API
+  verifyEmailCode,     // 인증번호 확인 API
+  resetPassword,       // 비밀번호 재설정 API
+} from '../../api/authApi';
 
 export default function ResetPasswordPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -30,30 +30,28 @@ export default function ResetPasswordPage({ navigation }) {
     confirmPassword.length > 0 &&
     newPassword === confirmPassword;
 
+  // 이메일로 인증번호 요청
   const handleRequestCode = async () => {
     console.log('인증요청 클릭됨 (비밀번호 재설정)');
-    // ─── API 예시 ───
-    // try {
-    //   const res = await requestResetCode(email);
-    //   alert('인증번호가 이메일로 전송되었습니다.');
-    // } catch (error) {
-    //   console.error(error);
-    //   alert('인증 요청 실패: ' + (error.response?.data || '오류 발생'));
-    // }
-    alert('(샘플) 인증번호가 이메일로 전송되었습니다.');
+    try {
+      await sendVerificationEmail(email);
+      alert('인증번호가 이메일로 전송되었습니다.');
+    } catch (error) {
+      console.error(error);
+      alert('인증 요청 실패: ' + (error.response?.data || '오류 발생'));
+    }
   };
 
+  // 인증번호 확인
   const handleVerifyCode = async () => {
     console.log('인증확인 클릭됨');
-    // ─── API 예시 ───
-    // try {
-    //   await verifyResetCode(email, parseInt(verificationCode, 10));
-    //   alert('인증이 완료되었습니다.');
-    // } catch (error) {
-    //   console.error(error);
-    //   alert('인증 실패: ' + (error.response?.data || '오류 발생'));
-    // }
-    alert('(샘플) 인증이 완료되었습니다.');
+    try {
+      await verifyEmailCode(email, parseInt(verificationCode, 10));
+      alert('인증이 완료되었습니다.');
+    } catch (error) {
+      console.error(error);
+      alert('인증 실패: ' + (error.response?.data || '오류 발생'));
+    }
   };
 
   const handleSubmitNewPassword = async () => {
@@ -67,19 +65,18 @@ export default function ResetPasswordPage({ navigation }) {
     }
 
     console.log('설정완료 클릭됨');
-    // ─── API 예시 ───
-    // try {
-    //   await resetPassword({ email, code: verificationCode, password: newPassword });
-    //   alert('비밀번호가 성공적으로 재설정되었습니다.');
-    //   navigation.navigate('Login');
-    // } catch (error) {
-    //   console.error(error);
-    //   alert('비밀번호 재설정 실패: ' + (error.response?.data || '오류 발생'));
-    // }
-
-    // 샘플 동작: 알림 후 "Login" 화면으로 이동
-    alert('(샘플) 비밀번호가 성공적으로 재설정되었습니다.');
-    navigation.navigate('Login');
+    try {
+      await resetPassword({
+        email,
+        authNum: parseInt(verificationCode, 10),
+        password: newPassword,
+      });
+      alert('비밀번호가 성공적으로 재설정되었습니다.');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error(error);
+      alert('비밀번호 재설정 실패: ' + (error.response?.data || '오류 발생'));
+    }
   };
 
   return (

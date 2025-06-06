@@ -23,13 +23,10 @@ export const signup = ({ name, email, password }) => {
   });
 };
 
-/*
-;(async () => {
-  try {
-    const res = await sendVerificationEmail('gusdb0214@naver.com');
-    console.log('✅ 요청 성공:', res.data);
-  } catch (err) {
-    console.error('❌ 요청 실패:', err.message);
-  }
-})();
-*/
+export const resetPassword = ({ email, authNum, password }) => {
+  return axios.post(`${BASE_URL}/password-reset`, {
+    email,
+    authNum: parseInt(authNum),
+    password,
+  });
+};
