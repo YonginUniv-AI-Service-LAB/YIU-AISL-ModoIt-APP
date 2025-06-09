@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import styles from './LoginPage.styles';
 import { login } from '../../api/authApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -21,15 +22,23 @@ export default function LoginPage({ navigation }) {
 
     try {
       const response = await login({ email, password });
+      const { name, id, email: userEmail, firstLogin } = response.data;
+
+      // 사용자 정보 저장
+      await AsyncStorage.setItem('userName', name);
+      await AsyncStorage.setItem('userId', id.toString());
+      await AsyncStorage.setItem('userEmail', userEmail);
+      await AsyncStorage.setItem('firstLogin', firstLogin.toString());
 
       // 로그인 성공 시 처리
       console.log('로그인에 성공:', response.data);
 
-      // TODO: 백엔드에서 isFirstLogin 여부를 반환하지 않는다면, 임시로 SurveyIntro로 이동
-      navigation.navigate('SurveyIntro');
-
-      // 만약 메인 페이지로 보내고 싶으면
-      // navigation.navigate('Main');
+      // firstLogin 여부에 따라 이동
+      if (firstLogin === 1) {
+        navigation.navigate('SurveyIntro'); // 또는 ProfilePage
+      } else {
+        navigation.navigate('Main'); // 또는 메인 홈 페이지
+      }
     } catch (error) {
       console.error('로그인 실패:', error.response?.data || error.message);
       alert('로그인 실패: ' + (error.response?.data || '오류가 발생했습니다.'));

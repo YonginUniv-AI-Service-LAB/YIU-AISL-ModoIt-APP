@@ -11,14 +11,38 @@ import {
 import styles from './PreviewRoutinePage.styles';
 import RoutinePreviewCard from '../../components/Card/RoutinePreviewCard';
 import { SNAP_WIDTH } from '../../components/Card/RoutinePreviewCard.styles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
 export default function PreviewRoutinePage({ navigation }) {
   const [routineCards, setRoutineCards] = useState([]); // 루틴 카드 배열
   const [loading, setLoading] = useState(true); // 로딩 상태
+  const [userName, setUserName] = useState('회원'); // 사용자 이름
   const [currentIndex, setCurrentIndex] = useState(1); // 현재 카드 인덱스
   const flatListRef = useRef(null); // FlatList 참조
+
+  // 사용자 이름 불러오기
+  useEffect(() => {
+    const loadUserName = async () => {
+      try {
+        const fullName = await AsyncStorage.getItem('userName');
+        if (fullName) {
+          // 성을 제외한 이름만 추출: 2글자 이상일 경우 뒤쪽 2글자 사용
+          const trimmedName =
+            fullName.length > 1 ? fullName.slice(-2) : fullName;
+          setUserName(trimmedName);
+        } else {
+          setUserName('회원');
+        }
+      } catch (e) {
+        console.error('이름 불러오기 실패:', e);
+        setUserName('회원');
+      }
+    };
+
+    loadUserName();
+  }, []);
 
   useEffect(() => {
     // TODO: 태그 기반으로 추천된 루틴 데이터를 API에서 가져와야 함
@@ -91,7 +115,7 @@ export default function PreviewRoutinePage({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <Text style={styles.titleText}>
-        우민님을 위한{'\n'}맛보기 루틴이 준비되었어요!{'\n'}이제 시작해볼까요?
+        {userName}님을 위한{'\n'}맛보기 루틴이 준비되었어요!{'\n'}이제 시작해볼까요?
       </Text>
 
       {loading ? (
