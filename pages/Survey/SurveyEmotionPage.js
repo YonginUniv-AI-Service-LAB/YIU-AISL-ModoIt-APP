@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import styles from './SurveyEmotionPage.styles';
 import ProgressIndicator from '../../components/ProgressIndicator/ProgressIndicator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,6 +14,14 @@ export default function SurveyEmotionPage({ navigation }) {
     '힘들어요',
     '너무 힘들어요',
   ];
+
+  const emotionMap = {
+    '너무 행복해요': 1,
+    '행복해요': 1,
+    '그냥 그래요': 2,
+    '힘들어요': 3,
+    '너무 힘들어요': 3,
+  };
 
   const [userName, setUserName] = useState('');
 
@@ -39,7 +47,13 @@ export default function SurveyEmotionPage({ navigation }) {
   }, []);
 
   const handleNext = () => {
-    navigation.navigate('SurveyStrength', { selectedOption: selected });
+    if (!selected) {
+      Alert.alert('알림', '감정을 선택해주세요.');
+      return;
+    }
+    
+    const emotionValue = emotionMap[selected];
+    navigation.navigate('SurveyStrength', { emotion: emotionValue });
   };
 
   return (

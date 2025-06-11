@@ -12,10 +12,20 @@ import styles from './PreviewRoutinePage.styles';
 import RoutinePreviewCard from '../../components/Card/RoutinePreviewCard';
 import { SNAP_WIDTH } from '../../components/Card/RoutinePreviewCard.styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
+import { fetchRecommendedRoutines } from '../../api/recommendationApi';
 
 const { width } = Dimensions.get('window');
 
 export default function PreviewRoutinePage({ navigation }) {
+  const route = useRoute();
+  console.log('받은 route.params:', route.params); // 디버깅용
+  // const { emotion, intensity, category } = route.params;
+  const emotion = route.params?.emotion;
+  const intensity = route.params?.intensity;
+  const category = route.params?.category;
+  console.log('구조분해할당 후:', { emotion, intensity, category }); // 디버깅용
+
   const [routineCards, setRoutineCards] = useState([]); // 루틴 카드 배열
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [userName, setUserName] = useState('회원'); // 사용자 이름
@@ -44,46 +54,53 @@ export default function PreviewRoutinePage({ navigation }) {
     loadUserName();
   }, []);
 
+  // 추천 루틴 불러오기
   useEffect(() => {
-    // TODO: 태그 기반으로 추천된 루틴 데이터를 API에서 가져와야 함
-    const fetchPreviewRoutines = async () => {
-      try {
-        // 임시 데이터
-        setTimeout(() => {
-          const dummyRoutines = [
-            '아침 이불 정리하기',
-            '아침 스트레칭',
-            '1000보 이상 걷기',
-            '일어나자마자 씻기',
-            '2분 달리기',
-          ];
+    const fetchData = async () => {
+      // 파라미터 검증을 먼저 실행
+      if (!emotion || !intensity || !category) {
+        console.log('파라미터 누락 - API 호출 중단:', { emotion, intensity, category });
+        setLoading(false);
+        return;
+      }
 
-          // 임시로 동일한 카드 3개 생성
-          setRoutineCards([
-            { id: '1', title: '기력 충전 운동 루틴', routines: dummyRoutines },
-            { id: '2', title: '기력 충전 운동 루틴', routines: dummyRoutines },
-            { id: '3', title: '기력 충전 운동 루틴', routines: dummyRoutines },
-          ]);
-          setLoading(false);
-        }, 800);
+      try {
+        console.log('API 호출 파라미터:', { emotion, intensity, category }); // 디버깅용
+
+        const response = await fetchRecommendedRoutines({
+          emotion,
+          intensity,
+          category,
+        });
+
+        const data = response.data; // [{ id, content, ... }, ...]
+        console.log('백엔드에서 받은 data:', data);
+
+        // content만 뽑아서 카드에 넣기 (카드 3장 생성)
+        const formatted = data.map((routineGroup, idx) => ({
+          id: `${idx}`,
+          title: '추천 루틴',
+          routines: routineGroup.map((item) => item.content), // 여기서 item은 {content: "..."}
+        }));
+
+        setRoutineCards(formatted);
+        setLoading(false);
       } catch (error) {
         console.error('루틴 불러오기 실패:', error);
         setLoading(false);
-        // TODO: 에러 핸들링 필요
       }
     };
 
-    fetchPreviewRoutines();
-  }, []);
+    fetchData();
+  }, [emotion, intensity, category]);
 
   const handleStart = () => {
     // TODO: 현재 화면에 있는 루틴을 MainPage에 전달해야 함
     // 지금은 페이지 전환만 처리
-    navigation.navigate('MainPage');
+    navigation.navigate('MainPage', { routines: routineCards });
   };
 
   const handleSkip = () => {
-    // TODO: 루틴 전달 없이 MainPage로 이동
     navigation.navigate('MainPage');
   };
 
