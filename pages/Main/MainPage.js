@@ -9,6 +9,7 @@ import BottomTabBar from '../../components/common/BottomTabBar';
 import AddRoutineModal from '../../components/Modal/AddRoutineModal';
 import EditRoutineModal from '../../components/Modal/EditRoutineModal';
 import RoutineSection from '../../components/Routine/RoutineSection';
+import { useRoute } from '@react-navigation/native';
 
 export default function MainPage({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('routine');
@@ -19,6 +20,8 @@ export default function MainPage({ navigation }) {
   const [routineText, setRoutineText] = useState('');
   const [routines, setRoutines] = useState([]);
   const [selectedRoutine, setSelectedRoutine] = useState(null);
+  const route = useRoute();
+  const recommendedRoutines = route.params?.routines;
 
   const toMins = (timeStr) => {
     const [h, m] = timeStr.split(':').map((n) => parseInt(n, 10));
@@ -58,6 +61,31 @@ export default function MainPage({ navigation }) {
       )
     );
   };
+
+  // 추천 루틴이 있다면 처음 한 번만 등록
+  useEffect(() => {
+    // PreviewRoutinePage에서 전달된 루틴이 있는 경우 추가
+    const passedRoutines = route.params?.routines || [];
+
+    if (passedRoutines.length > 0) {
+      const converted = passedRoutines.map((item) => {
+      const rawTime = item.time_slot;
+      const formattedTime =
+        typeof rawTime === 'string' && rawTime.length >= 5
+          ? rawTime.substring(0, 5)
+          : '07:30'; // 디폴트 시간
+
+      return {
+        id: `preset-${item.id}`,
+        time: formattedTime,
+        title: item.content,
+        checked: false,
+      };
+    });
+
+      setRoutines((prev) => [...prev, ...converted]);
+    }
+  }, [route.params]);
 
   // 날짜 및 주간 헤더 준비
   const today = new Date();
@@ -123,9 +151,6 @@ export default function MainPage({ navigation }) {
               const unchecked = routines.filter((item) => !item.checked);
               const checked = routines.filter((item) => item.checked);
               navigation.navigate('FeedbackCard', { unchecked, checked });
-              /* 기존 코드
-              navigation.navigate('FeedbackCard');
-              */
             }}
           >
             <Text style={styles.endButtonText}>끝내기</Text>

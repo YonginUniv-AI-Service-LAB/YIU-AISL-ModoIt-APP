@@ -95,13 +95,17 @@ export default function PreviewRoutinePage({ navigation }) {
   }, [emotion, intensity, category]);
 
   const handleStart = () => {
-    // TODO: 현재 화면에 있는 루틴을 MainPage에 전달해야 함
-    // 지금은 페이지 전환만 처리
-    navigation.navigate('MainPage', { routines: routineCards });
+
+    if (!routineCards[currentIndex]) return;
+
+    const selected = routineCards[currentIndex]; 
+    const selectedRoutines = selected.routines;
+
+    navigation.navigate('Main', { routines: selectedRoutines });
   };
 
   const handleSkip = () => {
-    navigation.navigate('MainPage');
+    navigation.navigate('Main');
   };
 
   // FlatList에서 현재 보이는 카드 감지
