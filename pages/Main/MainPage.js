@@ -9,13 +9,7 @@ import BottomTabBar from '../../components/common/BottomTabBar';
 import AddRoutineModal from '../../components/Modal/AddRoutineModal';
 import EditRoutineModal from '../../components/Modal/EditRoutineModal';
 import RoutineSection from '../../components/Routine/RoutineSection';
-import {
-  addRoutine,
-  checkRoutine,
-  getRoutineDetail,
-  editRoutine,
-  getRoutinesByDate,
-} from '../../api/authApi';
+import { useRoute } from '@react-navigation/native';
 
 export default function MainPage({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('routine');
@@ -26,81 +20,72 @@ export default function MainPage({ navigation }) {
   const [routineText, setRoutineText] = useState('');
   const [routines, setRoutines] = useState([]);
   const [selectedRoutine, setSelectedRoutine] = useState(null);
+  const route = useRoute();
+  const recommendedRoutines = route.params?.routines;
 
   const toMins = (timeStr) => {
-    if (!timeStr || !timeStr.includes(':')) return 0;
     const [h, m] = timeStr.split(':').map((n) => parseInt(n, 10));
     return h * 60 + m;
   };
 
-  const handleAddRoutine = async () => {
+  const handleAddRoutine = () => {
     const hh = hour.padStart(2, '0');
     const mm = minute.padStart(2, '0');
-    const newRoutine = {
-      timeSlot: `${hh}:${mm}`,
-      content: routineText.trim() || '제목 없음',
+    const newItem = {
+      id: Date.now().toString(),
+      time: `${hh}:${mm}`,
+      title: routineText.trim() || '제목 없음',
+      checked: false,
     };
-
-    try {
-      await addRoutine(newRoutine); // API 호출
-
-      // 로컬에도 반영
-      const newItem = {
-        id: Date.now().toString(),
-        ...newRoutine,
-        checked: false,
-      };
-
-      setRoutines((prev) =>
-        [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
-      );
-      setHour('07');
-      setMinute('30');
-      setRoutineText('');
-      setAddModalVisible(false);
-    } catch (error) {
-      console.error('루틴 추가 실패:', error);
-    }
+    setRoutines((prev) =>
+      [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
+    );
+    setHour('07');
+    setMinute('30');
+    setRoutineText('');
+    setAddModalVisible(false);
   };
 
-  const handleSaveEdited = async (updated) => {
-    try {
-      await editRoutine({
-        id: updated.id,
-        time: updated.time,
-        title: updated.title,
-      });
-
-      setRoutines((prev) =>
-        prev.map((item) => (item.id === updated.id ? updated : item))
-      );
-    } catch (error) {
-      console.error('루틴 수정 실패:', error);
-    } finally {
-      setSelectedRoutine(null);
-      setEditModalVisible(false);
-    }
+  const handleSaveEdited = (updated) => {
+    setRoutines((prev) =>
+      prev.map((item) => (item.id === updated.id ? updated : item))
+    );
+    setSelectedRoutine(null);
+    setEditModalVisible(false);
   };
 
-  const toggleCheck = async (id) => {
+  const toggleCheck = (id) => {
     setRoutines((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, checked: !item.checked } : item
       )
     );
-    // 해당 루틴을 찾아서 현재 체크 상태 확인
-    const routineToUpdate = routines.find((item) => item.id === id);
-    if (!routineToUpdate) return;
-
-    try {
-      await checkRoutine({
-        routineId: id,
-        checked: !routineToUpdate.checked,
-      });
-    } catch (error) {
-      console.error('루틴 체크 업데이트 실패:', error);
-    }
   };
+
+  // 추천 루틴이 있다면 처음 한 번만 등록
+  useEffect(() => {
+    // PreviewRoutinePage에서 전달된 루틴이 있는 경우 추가
+    const passedRoutines = route.params?.routines || [];
+
+    if (passedRoutines.length > 0) {
+      const converted = passedRoutines.map((item) => {
+        const rawTime = item.time_slot;
+        const formattedTime =
+          typeof rawTime === 'string' && rawTime.length >= 5
+            ? rawTime.substring(0, 5)
+            : '07:30'; // 디폴트 시간
+
+        return {
+          id: `preset-${item.id}`,
+          time: formattedTime,
+          title: item.content,
+          checked: false,
+        };
+      });
+
+      setRoutines((prev) => [...prev, ...converted]);
+    }
+  }, [route.params]);
 
   // 날짜 및 주간 헤더 준비
   const today = new Date();
@@ -129,31 +114,10 @@ export default function MainPage({ navigation }) {
     else grouped.evening.push(item);
   });
 
-  const onPressRoutine = async (item) => {
-    try {
-      const res = await getRoutineDetail(item.id);
-      const { id, time, title } = res.data;
-
-      setSelectedRoutine({ id, time, title }); // 서버로부터 받은 데이터로 초기화
-      setEditModalVisible(true);
-    } catch (error) {
-      console.error('루틴 상세 조회 실패:', error);
-    }
+  const onPressRoutine = (item) => {
+    setSelectedRoutine(item);
+    setEditModalVisible(true);
   };
-
-  useEffect(() => {
-    const fetchRoutines = async () => {
-      try {
-        const todayStr = today.toISOString().split('T')[0]; // 예: '2025-06-11'
-        const res = await getRoutinesByDate(todayStr);
-        setRoutines(res.data);
-      } catch (error) {
-        console.error('루틴 불러오기 실패:', error);
-      }
-    };
-
-    fetchRoutines();
-  }, []);
 
   const renderRoutineTab = () => (
     <View style={styles.routineWrapper}>
@@ -182,24 +146,11 @@ export default function MainPage({ navigation }) {
           />
           <TouchableOpacity
             style={styles.endButton}
-            onPress={async () => {
+            onPress={() => {
               // 수정된 부분: 체크되지 않은 루틴만 필터링하여 첫 번째 피드백 화면으로 전달
               const unchecked = routines.filter((item) => !item.checked);
               const checked = routines.filter((item) => item.checked);
-
-              try {
-                await finishRoutine({
-                  checked: checked.map((item) => item.id),
-                  unchecked: unchecked.map((item) => item.id),
-                });
-              } catch (error) {
-                console.error('루틴 끝내기 실패:', error);
-              }
-
               navigation.navigate('FeedbackCard', { unchecked, checked });
-              /* 기존 코드
-              navigation.navigate('FeedbackCard');
-              */
             }}
           >
             <Text style={styles.endButtonText}>끝내기</Text>
