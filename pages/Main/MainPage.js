@@ -9,6 +9,13 @@ import BottomTabBar from '../../components/common/BottomTabBar';
 import AddRoutineModal from '../../components/Modal/AddRoutineModal';
 import EditRoutineModal from '../../components/Modal/EditRoutineModal';
 import RoutineSection from '../../components/Routine/RoutineSection';
+import {
+  addRoutine,
+  checkRoutine,
+  getRoutineDetail,
+  editRoutine,
+  getRoutinesByDate,
+} from '../../api/authApi';
 
 export default function MainPage({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('routine');
@@ -21,42 +28,78 @@ export default function MainPage({ navigation }) {
   const [selectedRoutine, setSelectedRoutine] = useState(null);
 
   const toMins = (timeStr) => {
+    if (!timeStr || !timeStr.includes(':')) return 0;
     const [h, m] = timeStr.split(':').map((n) => parseInt(n, 10));
     return h * 60 + m;
   };
 
-  const handleAddRoutine = () => {
+  const handleAddRoutine = async () => {
     const hh = hour.padStart(2, '0');
     const mm = minute.padStart(2, '0');
-    const newItem = {
-      id: Date.now().toString(),
-      time: `${hh}:${mm}`,
-      title: routineText.trim() || '제목 없음',
-      checked: false,
+    const newRoutine = {
+      timeSlot: `${hh}:${mm}`,
+      content: routineText.trim() || '제목 없음',
     };
-    setRoutines((prev) =>
-      [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
-    );
-    setHour('07');
-    setMinute('30');
-    setRoutineText('');
-    setAddModalVisible(false);
+
+    try {
+      await addRoutine(newRoutine); // API 호출
+
+      // 로컬에도 반영
+      const newItem = {
+        id: Date.now().toString(),
+        ...newRoutine,
+        checked: false,
+      };
+
+      setRoutines((prev) =>
+        [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
+      );
+      setHour('07');
+      setMinute('30');
+      setRoutineText('');
+      setAddModalVisible(false);
+    } catch (error) {
+      console.error('루틴 추가 실패:', error);
+    }
   };
 
-  const handleSaveEdited = (updated) => {
-    setRoutines((prev) =>
-      prev.map((item) => (item.id === updated.id ? updated : item))
-    );
-    setSelectedRoutine(null);
-    setEditModalVisible(false);
+  const handleSaveEdited = async (updated) => {
+    try {
+      await editRoutine({
+        id: updated.id,
+        time: updated.time,
+        title: updated.title,
+      });
+
+      setRoutines((prev) =>
+        prev.map((item) => (item.id === updated.id ? updated : item))
+      );
+    } catch (error) {
+      console.error('루틴 수정 실패:', error);
+    } finally {
+      setSelectedRoutine(null);
+      setEditModalVisible(false);
+    }
   };
 
-  const toggleCheck = (id) => {
+  const toggleCheck = async (id) => {
     setRoutines((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, checked: !item.checked } : item
       )
     );
+    // 해당 루틴을 찾아서 현재 체크 상태 확인
+    const routineToUpdate = routines.find((item) => item.id === id);
+    if (!routineToUpdate) return;
+
+    try {
+      await checkRoutine({
+        routineId: id,
+        checked: !routineToUpdate.checked,
+      });
+    } catch (error) {
+      console.error('루틴 체크 업데이트 실패:', error);
+    }
   };
 
   // 날짜 및 주간 헤더 준비
@@ -86,10 +129,31 @@ export default function MainPage({ navigation }) {
     else grouped.evening.push(item);
   });
 
-  const onPressRoutine = (item) => {
-    setSelectedRoutine(item);
-    setEditModalVisible(true);
+  const onPressRoutine = async (item) => {
+    try {
+      const res = await getRoutineDetail(item.id);
+      const { id, time, title } = res.data;
+
+      setSelectedRoutine({ id, time, title }); // 서버로부터 받은 데이터로 초기화
+      setEditModalVisible(true);
+    } catch (error) {
+      console.error('루틴 상세 조회 실패:', error);
+    }
   };
+
+  useEffect(() => {
+    const fetchRoutines = async () => {
+      try {
+        const todayStr = today.toISOString().split('T')[0]; // 예: '2025-06-11'
+        const res = await getRoutinesByDate(todayStr);
+        setRoutines(res.data);
+      } catch (error) {
+        console.error('루틴 불러오기 실패:', error);
+      }
+    };
+
+    fetchRoutines();
+  }, []);
 
   const renderRoutineTab = () => (
     <View style={styles.routineWrapper}>
@@ -118,10 +182,20 @@ export default function MainPage({ navigation }) {
           />
           <TouchableOpacity
             style={styles.endButton}
-            onPress={() => {
+            onPress={async () => {
               // 수정된 부분: 체크되지 않은 루틴만 필터링하여 첫 번째 피드백 화면으로 전달
               const unchecked = routines.filter((item) => !item.checked);
               const checked = routines.filter((item) => item.checked);
+
+              try {
+                await finishRoutine({
+                  checked: checked.map((item) => item.id),
+                  unchecked: unchecked.map((item) => item.id),
+                });
+              } catch (error) {
+                console.error('루틴 끝내기 실패:', error);
+              }
+
               navigation.navigate('FeedbackCard', { unchecked, checked });
               /* 기존 코드
               navigation.navigate('FeedbackCard');

@@ -1,11 +1,20 @@
 // FeedbackCalendarPage.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
 import styles from './FeedbackCalendarPage.styles';
 import BottomTabBar from '../../components/common/BottomTabBar';
 import FeedbackModal from '../../components/Modal/FeedbackModal';
 import CircularProgressWithIcon from '../../components/Graph/CircularProgressWithIcon';
 
+const { width, height } = Dimensions.get('window');
 export default function FeedbackCalendarPage({ navigation }) {
   // ─── 1. 오늘(today) 정보 ───
   const today = new Date();
@@ -136,89 +145,98 @@ export default function FeedbackCalendarPage({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* ───── Header (◀ 6월 ▶) ───── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onPrevMonth}>
-          <Text style={styles.navArrowText}>{'< '} </Text>
-        </TouchableOpacity>
-        <Text style={styles.monthText}>
-          {monthNames[currentDate.getMonth()]}
-        </Text>
-        <TouchableOpacity onPress={onNextMonth}>
-          <Text style={styles.navArrowText}>{' >'}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* ───── 요일 레이블 ───── */}
-      <View style={styles.weekdayContainer}>
-        {['월', '화', '수', '목', '금', '토', '일'].map((wd) => (
-          <Text key={wd} style={styles.weekdayText}>
-            {wd}
+      {/* ───── ScrollView로 감싸기 ───── */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: height * 0.1,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ───── Header (◀ 6월 ▶) ───── */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onPrevMonth}>
+            <Text style={styles.navArrowText}>{'< '}</Text>
+          </TouchableOpacity>
+          <Text style={styles.monthText}>
+            {monthNames[currentDate.getMonth()]}
           </Text>
-        ))}
-      </View>
-
-      {/* ───── 날짜 그리드 ───── */}
-      <View style={styles.calendarContainer}>
-        {weeks.map((week, wIdx) => (
-          <View key={wIdx} style={styles.weekRow}>
-            {week.map((cell, idx) => {
-              const { day, current } = cell;
-              return (
-                <TouchableOpacity
-                  key={idx}
-                  style={[
-                    styles.dayContainer,
-                    current && day === selectedDay
-                      ? styles.selectedDayContainer
-                      : null,
-                  ]}
-                  onPress={() => current && onSelectDay(day)}
-                  disabled={!current}
-                >
-                  <Text
-                    style={[
-                      styles.dayText,
-                      current && day === selectedDay
-                        ? styles.selectedDayText
-                        : null,
-                      !current ? { color: '#C0C0C0' } : null,
-                    ]}
-                  >
-                    {day}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        ))}
-      </View>
-
-      {/* ───── Feedback 카드 ───── */}
-      <View style={styles.feedbackCard}>
-        {/* 피드백 타이틀 (가운데 정렬) + '>' 버튼 */}
-        <View style={styles.titleRow}>
-          <Text style={styles.feedbackTitle}>이대로만 하면 돼요!</Text>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Text style={styles.arrowIcon}>{'>'}</Text>
+          <TouchableOpacity onPress={onNextMonth}>
+            <Text style={styles.navArrowText}>{' >'}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* CircularProgressWithIcon 컴포넌트 */}
-        <View style={styles.centered}>
-          <CircularProgressWithIcon
-            progress={progress}
-            // 실제 아이콘 경로를 프로젝트 구조에 맞게 수정하세요.
-            iconSource={require('../../assets/images/emotion_happy.png')}
-          />
+        {/* ───── 요일 레이블 ───── */}
+        <View style={styles.weekdayContainer}>
+          {['월', '화', '수', '목', '금', '토', '일'].map((wd) => (
+            <Text key={wd} style={styles.weekdayText}>
+              {wd}
+            </Text>
+          ))}
         </View>
-      </View>
+
+        {/* ───── 날짜 그리드 ───── */}
+        <View style={styles.calendarContainer}>
+          {weeks.map((week, wIdx) => (
+            <View key={wIdx} style={styles.weekRow}>
+              {week.map((cell, idx) => {
+                const { day, current } = cell;
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    style={[
+                      styles.dayContainer,
+                      current && day === selectedDay
+                        ? styles.selectedDayContainer
+                        : null,
+                    ]}
+                    onPress={() => current && onSelectDay(day)}
+                    disabled={!current}
+                  >
+                    <Text
+                      style={[
+                        styles.dayText,
+                        current && day === selectedDay
+                          ? styles.selectedDayText
+                          : null,
+                        !current ? { color: '#C0C0C0' } : null,
+                      ]}
+                    >
+                      {day}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ))}
+        </View>
+
+        {/* ───── Feedback 카드 ───── */}
+        <View style={styles.feedbackCard}>
+          {/* 피드백 타이틀 (가운데 정렬) + '>' 버튼 */}
+          <View style={styles.titleRow}>
+            <Text style={styles.feedbackTitle}>이대로만 하면 돼요!</Text>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Text style={styles.arrowIcon}>{'>'}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* CircularProgressWithIcon 컴포넌트 */}
+          <View style={styles.centered}>
+            <CircularProgressWithIcon
+              progress={progress}
+              // 실제 아이콘 경로를 프로젝트 구조에 맞게 수정하세요.
+              iconSource={require('../../assets/images/emotion_happy.png')}
+            />
+          </View>
+        </View>
+      </ScrollView>
 
       {/* ───── Feedback Modal ───── */}
       <FeedbackModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        // ▶ 여기에 formatSelectedDate()를 계산하여 prop으로 전달
         selectedDate={formatSelectedDate()}
       />
 

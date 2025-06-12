@@ -10,6 +10,9 @@ export default StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingTop: height * 0.05,
   },
+  scrollContent: {
+    paddingBottom: height * 0.1,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -51,11 +54,11 @@ export default StyleSheet.create({
   dayContainer: {
     width: daySize,
     height: daySize,
-    maxHeight: 45,
+    maxHeight: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: height * 0.008,
-    marginHorizontal: width * 0.0001,
+    marginVertical: height * 0.001,
+    marginHorizontal: width * 0.001,
     borderRadius: daySize / 2,
   },
   dayText: {
@@ -82,6 +85,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    marginBottom: height * 0.03,
   },
   // ─── 타이틀을 카드 내에서 완전히 가운데 정렬 ───
   titleRow: {
