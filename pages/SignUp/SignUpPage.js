@@ -22,7 +22,7 @@ console.log('▶︎ verifyEmailCode:', verifyEmailCode);
 console.log('▶︎ signup:', signup);
 */
 
-export default function SignUpPage() {
+export default function SignUpPage({ navigation}) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
@@ -65,7 +65,7 @@ export default function SignUpPage() {
       await signup({ name, email, password });
       alert('회원가입이 완료되었습니다!');
       // TODO: 로그인 페이지로 이동하거나 메인 페이지로 이동
-      // navigation.navigate('LoginPage');
+      navigation.navigate('Login');
     } catch (error) {
       console.error(error);
       alert('회원가입 실패: ' + (error.response?.data || '오류 발생'));

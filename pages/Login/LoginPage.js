@@ -34,7 +34,7 @@ export default function LoginPage({ navigation }) {
       console.log('로그인에 성공:', response.data);
 
       // firstLogin 여부에 따라 이동
-      if (firstLogin === 1) {
+      if (firstLogin === 0) {
         navigation.navigate('SurveyIntro'); // 또는 ProfilePage
       } else {
         navigation.navigate('Main'); // 또는 메인 홈 페이지

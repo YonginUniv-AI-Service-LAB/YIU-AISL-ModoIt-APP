@@ -21,7 +21,7 @@ export default function RoutinePreviewCard({ item, index, currentIndex }) {
       <View style={styles.routineList}>
         {item.routines.map((routine, idx) => (
           <View key={idx} style={styles.routineItem}>
-            <Text style={styles.routineItemText}>{routine}</Text>
+            <Text style={styles.routineItemText}>{routine.content}</Text>
           </View>
         ))}
       </View>

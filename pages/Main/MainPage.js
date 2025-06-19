@@ -68,7 +68,7 @@ export default function MainPage({ navigation }) {
     const passedRoutines = route.params?.routines || [];
 
     if (passedRoutines.length > 0) {
-      const converted = passedRoutines.map((item) => {
+      const converted = passedRoutines.map((item, index) => {
       const rawTime = item.time_slot;
       const formattedTime =
         typeof rawTime === 'string' && rawTime.length >= 5
@@ -76,7 +76,7 @@ export default function MainPage({ navigation }) {
           : '07:30'; // 디폴트 시간
 
       return {
-        id: `preset-${item.id}`,
+        id: item.id ? `preset-${item.id}` : `preset-${Date.now()}-${index}`,
         time: formattedTime,
         title: item.content,
         checked: false,
@@ -109,7 +109,7 @@ export default function MainPage({ navigation }) {
   const grouped = { morning: [], lunch: [], evening: [] };
   routines.forEach((item) => {
     const m = toMins(item.time);
-    if (m <= 12 * 60) grouped.morning.push(item);
+    if (m < 12 * 60) grouped.morning.push(item);
     else if (m <= 16 * 60) grouped.lunch.push(item);
     else grouped.evening.push(item);
   });
