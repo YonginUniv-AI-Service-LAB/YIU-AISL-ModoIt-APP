@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 //const BASE_URL = 'http://192.168.0.7:8080'; // 지영 집
-//const BASE_URL = 'http://192.168.123.112:8080'; // 유진 집
-const BASE_URL = 'http://10.30.7.87:8080'; // 유진 학교
+const BASE_URL = 'http://192.168.123.109:8080'; // 유진 집
+//const BASE_URL = 'http://10.30.7.87:8080'; // 유진 학교
 
 export const sendVerificationEmail = (email) => {
   return axios.post(`${BASE_URL}/email-auth`, { email });
@@ -62,6 +62,7 @@ export const editRoutine = ({ id, time, title }) => {
 export const getRoutinesByDate = (date) => {
   return axios.get(`${BASE_URL}/main`, {
     params: { date }, // 예: '2025-06-11'
+    withCredentials: true,
   });
 };
 export const finishRoutine = ({ checked, unchecked }) => {

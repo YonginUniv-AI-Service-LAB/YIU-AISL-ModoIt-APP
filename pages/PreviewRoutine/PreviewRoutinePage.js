@@ -59,7 +59,11 @@ export default function PreviewRoutinePage({ navigation }) {
     const fetchData = async () => {
       // 파라미터 검증을 먼저 실행
       if (!emotion || !intensity || !category) {
-        console.log('파라미터 누락 - API 호출 중단:', { emotion, intensity, category });
+        console.log('파라미터 누락 - API 호출 중단:', {
+          emotion,
+          intensity,
+          category,
+        });
         setLoading(false);
         return;
       }
@@ -95,10 +99,9 @@ export default function PreviewRoutinePage({ navigation }) {
   }, [emotion, intensity, category]);
 
   const handleStart = () => {
-
     if (!routineCards[currentIndex]) return;
 
-    const selected = routineCards[currentIndex]; 
+    const selected = routineCards[currentIndex];
     const selectedRoutines = selected.routines;
 
     navigation.navigate('Main', { routines: selectedRoutines });
@@ -136,7 +139,8 @@ export default function PreviewRoutinePage({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <Text style={styles.titleText}>
-        {userName}님을 위한{'\n'}맛보기 루틴이 준비되었어요!{'\n'}이제 시작해볼까요?
+        {userName}님을 위한{'\n'}맛보기 루틴이 준비되었어요!{'\n'}이제
+        시작해볼까요?
       </Text>
 
       {loading ? (

@@ -1,4 +1,3 @@
-// MainPage.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import styles from './MainPage.styles';
@@ -9,6 +8,13 @@ import BottomTabBar from '../../components/common/BottomTabBar';
 import AddRoutineModal from '../../components/Modal/AddRoutineModal';
 import EditRoutineModal from '../../components/Modal/EditRoutineModal';
 import RoutineSection from '../../components/Routine/RoutineSection';
+import {
+  addRoutine,
+  checkRoutine,
+  getRoutineDetail,
+  editRoutine,
+  getRoutinesByDate,
+} from '../../api/authApi';
 import { useRoute } from '@react-navigation/native';
 
 export default function MainPage({ navigation }) {
@@ -21,81 +27,135 @@ export default function MainPage({ navigation }) {
   const [routines, setRoutines] = useState([]);
   const [selectedRoutine, setSelectedRoutine] = useState(null);
   const route = useRoute();
-  const recommendedRoutines = route.params?.routines;
 
+  // "HH:mm" → 분 환산
   const toMins = (timeStr) => {
+    if (!timeStr || !timeStr.includes(':')) return 0;
     const [h, m] = timeStr.split(':').map((n) => parseInt(n, 10));
     return h * 60 + m;
   };
 
-  const handleAddRoutine = () => {
+  // ─ 루틴 추가 ─────────────────────────────────────────────────────────
+  const handleAddRoutine = async () => {
     const hh = hour.padStart(2, '0');
     const mm = minute.padStart(2, '0');
-    const newItem = {
-      id: Date.now().toString(),
-      time: `${hh}:${mm}`,
-      title: routineText.trim() || '제목 없음',
-      checked: false,
+    const newRoutine = {
+      timeSlot: `${hh}:${mm}`,
+      content: routineText.trim() || '제목 없음',
     };
-    setRoutines((prev) =>
-      [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
-    );
-    setHour('07');
-    setMinute('30');
-    setRoutineText('');
-    setAddModalVisible(false);
+
+    try {
+      const res = await addRoutine(newRoutine);
+      const newItem = {
+        id: res.data.id.toString(),
+        time: newRoutine.timeSlot,
+        title: newRoutine.content,
+        checked: false,
+      };
+      setRoutines((prev) =>
+        [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
+      );
+      setHour('07');
+      setMinute('30');
+      setRoutineText('');
+      setAddModalVisible(false);
+    } catch (error) {
+      console.error('루틴 추가 실패:', error);
+    }
   };
 
-  const handleSaveEdited = (updated) => {
-    setRoutines((prev) =>
-      prev.map((item) => (item.id === updated.id ? updated : item))
-    );
-    setSelectedRoutine(null);
-    setEditModalVisible(false);
+  // ─ 루틴 수정 저장 ───────────────────────────────────────────────────
+  const handleSaveEdited = async (updated) => {
+    try {
+      await editRoutine({
+        id: updated.id,
+        timeSlot: updated.time,
+        content: updated.title,
+      });
+      setRoutines((prev) =>
+        prev.map((item) => (item.id === updated.id ? updated : item))
+      );
+    } catch (error) {
+      console.error('루틴 수정 실패:', error);
+    } finally {
+      setSelectedRoutine(null);
+      setEditModalVisible(false);
+    }
   };
 
-  const toggleCheck = (id) => {
+  // ─ 체크 토글 ─────────────────────────────────────────────────────────
+  const toggleCheck = async (id) => {
     setRoutines((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, checked: !item.checked } : item
       )
     );
+    const target = routines.find((i) => i.id === id);
+    if (!target) return;
+    try {
+      await checkRoutine({ routineId: id, checked: !target.checked });
+    } catch (error) {
+      console.error('체크 업데이트 실패:', error);
+    }
   };
 
-  // 추천 루틴이 있다면 처음 한 번만 등록
+  // ─ 날짜별 루틴 불러오기 ───────────────────────────────────────────────
   useEffect(() => {
-    // PreviewRoutinePage에서 전달된 루틴이 있는 경우 추가
-    const passedRoutines = route.params?.routines || [];
+    const fetchRoutines = async () => {
+      try {
+        const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const res = await getRoutinesByDate(todayStr);
+        const mapped = res.data.map((item) => {
+          const rawTime = item.timeSlot ?? item.time_slot;
+          const time =
+            typeof rawTime === 'string' && rawTime.length >= 5
+              ? rawTime.substring(0, 5)
+              : '00:00';
+          return {
+            id: item.id.toString(),
+            time,
+            title: item.content,
+            checked: !!item.isCompleted,
+          };
+        });
+        setRoutines(mapped);
+      } catch (error) {
+        console.error('루틴 불러오기 실패:', error);
+      }
+    };
+    fetchRoutines();
+  }, []);
 
-    if (passedRoutines.length > 0) {
-      const converted = passedRoutines.map((item) => {
-        const rawTime = item.time_slot;
-        const formattedTime =
+  // ─ 추천 프리셋 합치기 ────────────────────────────────────────────────
+  useEffect(() => {
+    const passed = route.params?.routines || [];
+    if (passed.length) {
+      const preset = passed.map((item, idx) => {
+        const rawTime = item.time_slot ?? item.timeSlot;
+        const time =
           typeof rawTime === 'string' && rawTime.length >= 5
             ? rawTime.substring(0, 5)
-            : '07:30'; // 디폴트 시간
-
+            : '00:00';
         return {
-          id: `preset-${item.id}`,
-          time: formattedTime,
-          title: item.content,
+          id: `preset-${item.id ?? idx}`,
+          time,
+          title: item.content ?? '제목 없음',
           checked: false,
         };
       });
-
-      setRoutines((prev) => [...prev, ...converted]);
+      setRoutines((prev) => [...preset, ...prev]);
     }
   }, [route.params]);
 
-  // 날짜 및 주간 헤더 준비
+  // ─ 주간 헤더용 날짜 계산 ─────────────────────────────────────────────
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const getStartOfWeek = (date) => {
-    const d = new Date(date);
+  const getStartOfWeek = (d) => {
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    d.setDate(diff);
-    return d;
+    const start = new Date(d);
+    start.setDate(diff);
+    return start;
   };
   const baseDate = getStartOfWeek(today);
   const dateList = Array.from({ length: 7 }, (_, i) => {
@@ -105,20 +165,36 @@ export default function MainPage({ navigation }) {
   });
   const currentMonth = today.getMonth() + 1;
 
-  // 시간별 그룹핑
+  // ─ 시간대별 그룹핑 ──────────────────────────────────────────────────
   const grouped = { morning: [], lunch: [], evening: [] };
   routines.forEach((item) => {
-    const m = toMins(item.time);
-    if (m <= 12 * 60) grouped.morning.push(item);
-    else if (m <= 16 * 60) grouped.lunch.push(item);
+    const mins = toMins(item.time);
+    if (mins <= 720) grouped.morning.push(item);
+    else if (mins <= 960) grouped.lunch.push(item);
     else grouped.evening.push(item);
   });
 
-  const onPressRoutine = (item) => {
-    setSelectedRoutine(item);
-    setEditModalVisible(true);
+  // ─ 루틴 상세 조회 (편집) ─────────────────────────────────────────────
+  const onPressRoutine = async (item) => {
+    try {
+      const res = await getRoutineDetail(item.id);
+      const raw = res.data.timeSlot ?? '';
+      const time =
+        typeof raw === 'string' && raw.length >= 5
+          ? raw.substring(0, 5)
+          : '00:00';
+      setSelectedRoutine({
+        id: res.data.id.toString(),
+        time,
+        title: res.data.content,
+      });
+      setEditModalVisible(true);
+    } catch (error) {
+      console.error('상세 조회 실패:', error);
+    }
   };
 
+  // ─ 렌더링 ───────────────────────────────────────────────────────────
   const renderRoutineTab = () => (
     <View style={styles.routineWrapper}>
       <WhiteRoundedContainer style={styles.whiteContainer}>
@@ -128,28 +204,24 @@ export default function MainPage({ navigation }) {
             data={grouped.morning}
             onToggle={toggleCheck}
             onPressItem={onPressRoutine}
-            onPress={onPressRoutine}
           />
           <RoutineSection
             title="점심"
             data={grouped.lunch}
             onToggle={toggleCheck}
             onPressItem={onPressRoutine}
-            onPress={onPressRoutine}
           />
           <RoutineSection
             title="저녁"
             data={grouped.evening}
             onToggle={toggleCheck}
             onPressItem={onPressRoutine}
-            onPress={onPressRoutine}
           />
           <TouchableOpacity
             style={styles.endButton}
             onPress={() => {
-              // 수정된 부분: 체크되지 않은 루틴만 필터링하여 첫 번째 피드백 화면으로 전달
-              const unchecked = routines.filter((item) => !item.checked);
-              const checked = routines.filter((item) => item.checked);
+              const unchecked = routines.filter((i) => !i.checked);
+              const checked = routines.filter((i) => i.checked);
               navigation.navigate('FeedbackCard', { unchecked, checked });
             }}
           >
@@ -167,16 +239,12 @@ export default function MainPage({ navigation }) {
   );
 
   const renderContent = () => {
-    switch (selectedTab) {
-      case 'routine':
-        return renderRoutineTab();
-      case 'feedback':
-        return renderEmpty('💬 피드백 카드 (준비 중)');
-      case 'sample':
-        return renderEmpty('🍕 맛보기 루틴 (준비 중)');
-      default:
-        return null;
-    }
+    if (selectedTab === 'routine') return renderRoutineTab();
+    if (selectedTab === 'feedback')
+      return renderEmpty('💬 피드백 카드 (준비 중)');
+    if (selectedTab === 'sample')
+      return renderEmpty('🍕 맛보기 루틴 (준비 중)');
+    return null;
   };
 
   return (
@@ -187,6 +255,7 @@ export default function MainPage({ navigation }) {
         today={today}
       />
       {renderContent()}
+
       <AddRoutineModal
         visible={addModalVisible}
         onClose={() => setAddModalVisible(false)}
@@ -199,7 +268,6 @@ export default function MainPage({ navigation }) {
         onAdd={handleAddRoutine}
       />
 
-      {/* 편집 모달 */}
       <EditRoutineModal
         visible={editModalVisible}
         routineItem={selectedRoutine}
@@ -209,8 +277,9 @@ export default function MainPage({ navigation }) {
           setSelectedRoutine(null);
         }}
       />
+
       <FloatingActionButton onPress={() => setAddModalVisible(true)} />
-      {/* 하단 탭 */}
+
       <BottomTabBar
         currentTab="routine"
         onTabPress={(tab) => {
