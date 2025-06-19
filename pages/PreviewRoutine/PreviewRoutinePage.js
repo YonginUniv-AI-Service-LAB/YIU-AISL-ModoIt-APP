@@ -126,10 +126,19 @@ export default function PreviewRoutinePage({ navigation }) {
       await saveRecommendedRoutines(payload);
       console.log('추천 루틴 저장 완료');
 
-      // 루틴을 Main 페이지에 전달하면서 이동
-      navigation.navigate('Main', { routines: selectedRoutines });
+      // ✅ MainPage에 넘길 때 시간 포함해서 보내기
+      const routinesForMain = selectedRoutines.map((routine, index) => ({
+        id: routine.id ?? `preset-${Date.now()}-${index}`,
+        content: routine.content,
+        time:
+          typeof routine.time_slot === 'string' && routine.time_slot.length >= 5
+            ? routine.time_slot.substring(0, 5)
+            : '07:30',
+        checked: false,
+      }));
 
-      // ✅ TODO: 같은 루틴이 중복 저장되지 않도록 서버에서 중복 체크 로직 추가 필요
+      navigation.navigate('Main', { routines: routinesForMain });
+
     } catch (error) {
       console.error('추천 루틴 저장 실패:', error);
     }

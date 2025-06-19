@@ -10,6 +10,8 @@ import AddRoutineModal from '../../components/Modal/AddRoutineModal';
 import EditRoutineModal from '../../components/Modal/EditRoutineModal';
 import RoutineSection from '../../components/Routine/RoutineSection';
 import { useRoute } from '@react-navigation/native';
+import { fetchRoutinesByDate } from '../../api/routineApi';
+import { format } from 'date-fns'; // 날짜 포맷 라이브러리
 
 export default function MainPage({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('routine');
@@ -62,29 +64,43 @@ export default function MainPage({ navigation }) {
     );
   };
 
-  // 추천 루틴이 있다면 처음 한 번만 등록
+  // 저장된 루틴 GET API로 불러오기 (앱 재시작 시 사용)
   useEffect(() => {
-    // PreviewRoutinePage에서 전달된 루틴이 있는 경우 추가
-    const passedRoutines = route.params?.routines || [];
+    const loadRoutines = async () => {
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+      try {
+        const response = await fetchRoutinesByDate(todayStr);
+        const serverData = response.data;
 
-    if (passedRoutines.length > 0) {
-      const converted = passedRoutines.map((item, index) => {
-      const rawTime = item.time_slot;
-      const formattedTime =
-        typeof rawTime === 'string' && rawTime.length >= 5
-          ? rawTime.substring(0, 5)
-          : '07:30'; // 디폴트 시간
+        const fromServer = serverData.map((routine, index) => ({
+          id: `server-${routine.id ?? index}`,
+          title: routine.content,
+          time: routine.timeSlot?.slice(0, 5) ?? '07:30',
+          checked: false,
+        }));
 
-      return {
-        id: item.id ? `preset-${item.id}` : `preset-${Date.now()}-${index}`,
-        time: formattedTime,
-        title: item.content,
-        checked: false,
-      };
-    });
+        const fromRoute = route.params?.routines?.map((routine, index) => ({
+          id: `preset-${routine.id ?? index}`,
+          title: routine.content,
+          time: routine.time, // 추천 루틴은 time 포함되어 있으므로 그대로 사용
+          checked: false,
+        })) ?? [];
 
-      setRoutines((prev) => [...prev, ...converted]);
-    }
+        // 병합 + 중복 제거
+        setRoutines((prev) => {
+          const existing = prev.map((r) => `${r.title}-${r.time}`);
+          const all = [...fromServer, ...fromRoute];
+          const unique = all.filter(
+            (r) => !existing.includes(`${r.title}-${r.time}`)
+          );
+          return [...prev, ...unique].sort((a, b) => toMins(a.time) - toMins(b.time));
+        });
+      } catch (err) {
+        console.error('루틴 불러오기 실패:', err);
+      }
+    };
+
+    loadRoutines();
   }, [route.params]);
 
   // 날짜 및 주간 헤더 준비
