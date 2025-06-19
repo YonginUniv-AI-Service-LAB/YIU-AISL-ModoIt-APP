@@ -13,18 +13,21 @@ import RoutinePreviewCard from '../../components/Card/RoutinePreviewCard';
 import { SNAP_WIDTH } from '../../components/Card/RoutinePreviewCard.styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
-import { fetchRecommendedRoutines } from '../../api/recommendationApi';
+import {
+  fetchRecommendedRoutines,
+  saveRecommendedRoutines,
+} from '../../api/recommendationApi';
 
 const { width } = Dimensions.get('window');
 
 export default function PreviewRoutinePage({ navigation }) {
   const route = useRoute();
-  console.log('받은 route.params:', route.params); // 디버깅용
+  // console.log('받은 route.params:', route.params); // 디버깅용
   // const { emotion, intensity, category } = route.params;
   const emotion = route.params?.emotion;
   const intensity = route.params?.intensity;
   const category = route.params?.category;
-  console.log('구조분해할당 후:', { emotion, intensity, category }); // 디버깅용
+  // console.log('구조분해할당 후:', { emotion, intensity, category }); // 디버깅용
 
   const [routineCards, setRoutineCards] = useState([]); // 루틴 카드 배열
   const [loading, setLoading] = useState(true); // 로딩 상태
@@ -69,7 +72,7 @@ export default function PreviewRoutinePage({ navigation }) {
       }
 
       try {
-        console.log('API 호출 파라미터:', { emotion, intensity, category }); // 디버깅용
+        // console.log('API 호출 파라미터:', { emotion, intensity, category }); // 디버깅용
 
         const response = await fetchRecommendedRoutines({
           emotion,
@@ -84,7 +87,11 @@ export default function PreviewRoutinePage({ navigation }) {
         const formatted = data.map((routineGroup, idx) => ({
           id: `${idx}`,
           title: '추천 루틴',
-          routines: routineGroup.map((item) => item.content), // 여기서 item은 {content: "..."}
+          routines: routineGroup.map((item) => ({
+            id: item.id,
+            content: item.content,
+            time_slot: item.time_slot || '07:30', // 기본값 제공
+          })),
         }));
 
         setRoutineCards(formatted);
@@ -98,13 +105,49 @@ export default function PreviewRoutinePage({ navigation }) {
     fetchData();
   }, [emotion, intensity, category]);
 
-  const handleStart = () => {
+  const handleStart = async () => {
     if (!routineCards[currentIndex]) return;
 
+    // 현재 선택된 카드에서 루틴 리스트 추출
     const selected = routineCards[currentIndex];
     const selectedRoutines = selected.routines;
 
-    navigation.navigate('Main', { routines: selectedRoutines });
+    try {
+      // AsyncStorage에서 로그인된 사용자 ID 불러오기
+      const userId = await AsyncStorage.getItem('userId');
+
+      // 루틴 데이터를 서버에 보낼 수 있는 형태로 변환
+      const payload = selectedRoutines.map((routine) => ({
+        id: routine.id,
+        emotion: parseInt(emotion),
+        difficulty: parseInt(intensity),
+        category: parseInt(category),
+        content: routine.content,
+        time_slot: routine.time_slot,
+        // user_id: parseInt(userId),
+      }));
+
+      console.log('서버로 보낼 payload:', payload);
+
+      // 추천 루틴을 서버에 저장 (POST /start API 호출)
+      await saveRecommendedRoutines(payload);
+      console.log('추천 루틴 저장 완료');
+
+      // ✅ MainPage에 넘길 때 시간 포함해서 보내기
+      const routinesForMain = selectedRoutines.map((routine, index) => ({
+        id: routine.id ?? `preset-${Date.now()}-${index}`,
+        content: routine.content,
+        time:
+          typeof routine.time_slot === 'string' && routine.time_slot.length >= 5
+            ? routine.time_slot.substring(0, 5)
+            : '07:30',
+        checked: false,
+      }));
+
+      navigation.navigate('Main', { routines: routinesForMain });
+    } catch (error) {
+      console.error('추천 루틴 저장 실패:', error);
+    }
   };
 
   const handleSkip = () => {

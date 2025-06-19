@@ -16,6 +16,8 @@ import {
   getRoutinesByDate,
 } from '../../api/authApi';
 import { useRoute } from '@react-navigation/native';
+import { fetchRoutinesByDate } from '../../api/routineApi';
+import { format } from 'date-fns'; // 날짜 포맷 라이브러리
 
 export default function MainPage({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('routine');
@@ -99,52 +101,46 @@ export default function MainPage({ navigation }) {
     }
   };
 
-  // ─ 날짜별 루틴 불러오기 ───────────────────────────────────────────────
+  // 저장된 루틴 GET API로 불러오기 (앱 재시작 시 사용)
   useEffect(() => {
-    const fetchRoutines = async () => {
+    const loadRoutines = async () => {
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
       try {
-        const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-        const res = await getRoutinesByDate(todayStr);
-        const mapped = res.data.map((item) => {
-          const rawTime = item.timeSlot ?? item.time_slot;
-          const time =
-            typeof rawTime === 'string' && rawTime.length >= 5
-              ? rawTime.substring(0, 5)
-              : '00:00';
-          return {
-            id: item.id.toString(),
-            time,
-            title: item.content,
-            checked: !!item.isCompleted,
-          };
+        const response = await fetchRoutinesByDate(todayStr);
+        const serverData = response.data;
+
+        const fromServer = serverData.map((routine, index) => ({
+          id: `server-${routine.id ?? index}`,
+          title: routine.content,
+          time: routine.timeSlot?.slice(0, 5) ?? '07:30',
+          checked: false,
+        }));
+
+        const fromRoute =
+          route.params?.routines?.map((routine, index) => ({
+            id: `preset-${routine.id ?? index}`,
+            title: routine.content,
+            time: routine.time, // 추천 루틴은 time 포함되어 있으므로 그대로 사용
+            checked: false,
+          })) ?? [];
+
+        // 병합 + 중복 제거
+        setRoutines((prev) => {
+          const existing = prev.map((r) => `${r.title}-${r.time}`);
+          const all = [...fromServer, ...fromRoute];
+          const unique = all.filter(
+            (r) => !existing.includes(`${r.title}-${r.time}`)
+          );
+          return [...prev, ...unique].sort(
+            (a, b) => toMins(a.time) - toMins(b.time)
+          );
         });
-        setRoutines(mapped);
-      } catch (error) {
-        console.error('루틴 불러오기 실패:', error);
+      } catch (err) {
+        console.error('루틴 불러오기 실패:', err);
       }
     };
-    fetchRoutines();
-  }, []);
 
-  // ─ 추천 프리셋 합치기 ────────────────────────────────────────────────
-  useEffect(() => {
-    const passed = route.params?.routines || [];
-    if (passed.length) {
-      const preset = passed.map((item, idx) => {
-        const rawTime = item.time_slot ?? item.timeSlot;
-        const time =
-          typeof rawTime === 'string' && rawTime.length >= 5
-            ? rawTime.substring(0, 5)
-            : '00:00';
-        return {
-          id: `preset-${item.id ?? idx}`,
-          time,
-          title: item.content ?? '제목 없음',
-          checked: false,
-        };
-      });
-      setRoutines((prev) => [...preset, ...prev]);
-    }
+    loadRoutines();
   }, [route.params]);
 
   // ─ 주간 헤더용 날짜 계산 ─────────────────────────────────────────────
@@ -168,9 +164,9 @@ export default function MainPage({ navigation }) {
   // ─ 시간대별 그룹핑 ──────────────────────────────────────────────────
   const grouped = { morning: [], lunch: [], evening: [] };
   routines.forEach((item) => {
-    const mins = toMins(item.time);
-    if (mins <= 720) grouped.morning.push(item);
-    else if (mins <= 960) grouped.lunch.push(item);
+    const m = toMins(item.time);
+    if (m < 12 * 60) grouped.morning.push(item);
+    else if (m <= 16 * 60) grouped.lunch.push(item);
     else grouped.evening.push(item);
   });
 

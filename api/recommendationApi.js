@@ -1,5 +1,5 @@
 import axios from 'axios';
-// axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
 
 //const BASE_URL = 'http://192.168.0.7:8080'; // 지영 집
 const BASE_URL = 'http://192.168.123.109:8080'; // 유진 집
@@ -24,9 +24,12 @@ export const fetchRecommendedRoutines = ({ emotion, intensity, category }) => {
   });
 };
 
-// 추천 루틴을 저장하기
-export const saveRecommendedRoutines = (routinePresetList) => {
+// 추천 루틴 저장 API
+export const saveRecommendedRoutines = async (routinePresetList) => {
   return axios.post(`${BASE_URL}/start`, routinePresetList, {
-    withCredentials: true,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    withCredentials: true, // 세션 쿠키 포함
   });
 };
