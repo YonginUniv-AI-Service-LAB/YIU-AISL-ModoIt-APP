@@ -52,11 +52,11 @@ export const checkRoutine = ({ routineId, checked }) => {
 export const getRoutineDetail = (id) => {
   return axios.get(`${BASE_URL}/edit-routine-detail/${id}`);
 };
-export const editRoutine = ({ id, time, title }) => {
+export const editRoutine = ({ id, timeSlot, content }) => {
   return axios.patch(`${BASE_URL}/edit-routine-detail`, {
     id,
-    time,
-    title,
+    timeSlot,
+    content,
   });
 };
 export const getRoutinesByDate = (date) => {
