@@ -1,3 +1,4 @@
+// MainPage.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import styles from './MainPage.styles';
@@ -8,18 +9,18 @@ import BottomTabBar from '../../components/common/BottomTabBar';
 import AddRoutineModal from '../../components/Modal/AddRoutineModal';
 import EditRoutineModal from '../../components/Modal/EditRoutineModal';
 import RoutineSection from '../../components/Routine/RoutineSection';
+import { useRoute } from '@react-navigation/native';
 import {
   addRoutine,
   checkRoutine,
   getRoutineDetail,
   editRoutine,
-  getRoutinesByDate,
 } from '../../api/authApi';
-import { useRoute } from '@react-navigation/native';
-import { fetchRoutinesByDate } from '../../api/routineApi';
-import { format } from 'date-fns'; // 날짜 포맷 라이브러리
+import { fetchRoutinesByDate } from '../../api/routineApi'; // fetchRoutinesByDate 사용 :contentReference[oaicite:1]{index=1}
+import { format } from 'date-fns'; // format 사용
 
 export default function MainPage({ navigation }) {
+  const route = useRoute();
   const [selectedTab, setSelectedTab] = useState('routine');
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -28,16 +29,72 @@ export default function MainPage({ navigation }) {
   const [routineText, setRoutineText] = useState('');
   const [routines, setRoutines] = useState([]);
   const [selectedRoutine, setSelectedRoutine] = useState(null);
-  const route = useRoute();
 
   // "HH:mm" → 분 환산
   const toMins = (timeStr) => {
-    if (!timeStr || !timeStr.includes(':')) return 0;
+    if (!timeStr) return 0;
     const [h, m] = timeStr.split(':').map((n) => parseInt(n, 10));
     return h * 60 + m;
   };
 
-  // ─ 루틴 추가 ─────────────────────────────────────────────────────────
+  // ─ 저장된 루틴 + 추천 루틴 로드 ─────────────────────────────────────────
+  useEffect(() => {
+    const loadAllRoutines = async () => {
+      try {
+        // 1) 오늘 날짜 문자열 생성
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        // 2) fetchRoutinesByDate에 Date 객체로 전달
+        const res = await fetchRoutinesByDate(new Date(todayStr));
+        // 3) 서버 루틴 매핑
+        const saved = res.data.map((item) => {
+          const rawTime = item.timeSlot ?? item.time_slot;
+          const time =
+            typeof rawTime === 'string' && rawTime.length >= 5
+              ? rawTime.substring(0, 5)
+              : '00:00';
+          return {
+            id: item.id.toString(),
+            time,
+            title: item.content,
+            checked: !!item.isCompleted,
+          };
+        });
+
+        // 4) 추천 받은 프리셋(route.params) 매핑
+        const recommended = (route.params?.routines || []).map((item, idx) => {
+          const rawTime = item.timeSlot ?? item.time_slot;
+          const time =
+            typeof rawTime === 'string' && rawTime.length >= 5
+              ? rawTime.substring(0, 5)
+              : '00:00';
+          return {
+            id: `preset-${item.id ?? idx}`,
+            time,
+            title: item.content ?? '제목 없음',
+            checked: false,
+          };
+        });
+
+        // 5) 병합 + 중복 제거 + 시간 순 정렬
+        const seen = new Set();
+        const merged = [...recommended, ...saved].filter((r) => {
+          const key = `${r.title}-${r.time}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        merged.sort((a, b) => toMins(a.time) - toMins(b.time));
+
+        setRoutines(merged);
+      } catch (error) {
+        console.error('루틴 불러오기 실패:', error);
+      }
+    };
+
+    loadAllRoutines();
+  }, [route.params]);
+
+  //루틴 추가
   const handleAddRoutine = async () => {
     const hh = hour.padStart(2, '0');
     const mm = minute.padStart(2, '0');
@@ -48,11 +105,15 @@ export default function MainPage({ navigation }) {
 
     try {
       const res = await addRoutine(newRoutine);
+      const returned = res.data || {};
+      const idStr =
+        returned.id != null ? returned.id.toString() : Date.now().toString();
+
       const newItem = {
-        id: res.data.id.toString(),
-        time: newRoutine.timeSlot,
-        title: newRoutine.content,
-        checked: false,
+        id: idStr,
+        time: returned.timeSlot?.slice(0, 5) ?? newRoutine.timeSlot,
+        title: returned.content ?? newRoutine.content,
+        checked: !!returned.isCompleted,
       };
       setRoutines((prev) =>
         [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
@@ -66,7 +127,7 @@ export default function MainPage({ navigation }) {
     }
   };
 
-  // ─ 루틴 수정 저장 ───────────────────────────────────────────────────
+  //루틴 수정 저장
   const handleSaveEdited = async (updated) => {
     try {
       await editRoutine({
@@ -85,7 +146,7 @@ export default function MainPage({ navigation }) {
     }
   };
 
-  // ─ 체크 토글 ─────────────────────────────────────────────────────────
+  //체크 토글
   const toggleCheck = async (id) => {
     setRoutines((prev) =>
       prev.map((item) =>
@@ -101,49 +162,27 @@ export default function MainPage({ navigation }) {
     }
   };
 
-  // 저장된 루틴 GET API로 불러오기 (앱 재시작 시 사용)
-  useEffect(() => {
-    const loadRoutines = async () => {
-      const todayStr = format(new Date(), 'yyyy-MM-dd');
-      try {
-        const response = await fetchRoutinesByDate(todayStr);
-        const serverData = response.data;
+  //루틴 상세 조회 (편집)
+  const onPressRoutine = async (item) => {
+    try {
+      const res = await getRoutineDetail(item.id);
+      const rawTime = res.data.timeSlot ?? res.data.time_slot;
+      const time =
+        typeof rawTime === 'string' && rawTime.length >= 5
+          ? rawTime.substring(0, 5)
+          : '00:00';
+      setSelectedRoutine({
+        id: res.data.id.toString(),
+        time,
+        title: res.data.content,
+      });
+      setEditModalVisible(true);
+    } catch (error) {
+      console.error('상세 조회 실패:', error);
+    }
+  };
 
-        const fromServer = serverData.map((routine, index) => ({
-          id: `server-${routine.id ?? index}`,
-          title: routine.content,
-          time: routine.timeSlot?.slice(0, 5) ?? '07:30',
-          checked: false,
-        }));
-
-        const fromRoute =
-          route.params?.routines?.map((routine, index) => ({
-            id: `preset-${routine.id ?? index}`,
-            title: routine.content,
-            time: routine.time, // 추천 루틴은 time 포함되어 있으므로 그대로 사용
-            checked: false,
-          })) ?? [];
-
-        // 병합 + 중복 제거
-        setRoutines((prev) => {
-          const existing = prev.map((r) => `${r.title}-${r.time}`);
-          const all = [...fromServer, ...fromRoute];
-          const unique = all.filter(
-            (r) => !existing.includes(`${r.title}-${r.time}`)
-          );
-          return [...prev, ...unique].sort(
-            (a, b) => toMins(a.time) - toMins(b.time)
-          );
-        });
-      } catch (err) {
-        console.error('루틴 불러오기 실패:', err);
-      }
-    };
-
-    loadRoutines();
-  }, [route.params]);
-
-  // ─ 주간 헤더용 날짜 계산 ─────────────────────────────────────────────
+  // ─ 주간 헤더 날짜 계산 ───────────────────────────────────────────────
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const getStartOfWeek = (d) => {
@@ -164,31 +203,11 @@ export default function MainPage({ navigation }) {
   // ─ 시간대별 그룹핑 ──────────────────────────────────────────────────
   const grouped = { morning: [], lunch: [], evening: [] };
   routines.forEach((item) => {
-    const m = toMins(item.time);
-    if (m < 12 * 60) grouped.morning.push(item);
-    else if (m <= 16 * 60) grouped.lunch.push(item);
+    const mins = toMins(item.time);
+    if (mins <= 720) grouped.morning.push(item);
+    else if (mins <= 960) grouped.lunch.push(item);
     else grouped.evening.push(item);
   });
-
-  // ─ 루틴 상세 조회 (편집) ─────────────────────────────────────────────
-  const onPressRoutine = async (item) => {
-    try {
-      const res = await getRoutineDetail(item.id);
-      const raw = res.data.timeSlot ?? '';
-      const time =
-        typeof raw === 'string' && raw.length >= 5
-          ? raw.substring(0, 5)
-          : '00:00';
-      setSelectedRoutine({
-        id: res.data.id.toString(),
-        time,
-        title: res.data.content,
-      });
-      setEditModalVisible(true);
-    } catch (error) {
-      console.error('상세 조회 실패:', error);
-    }
-  };
 
   // ─ 렌더링 ───────────────────────────────────────────────────────────
   const renderRoutineTab = () => (
