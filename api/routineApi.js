@@ -14,3 +14,19 @@ export const fetchRoutinesByDate = async (date) => {
     withCredentials: true,
   });
 };
+
+// 루틴 체크 토글
+export const toggleRoutineCheck = async (routineId) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/check-routine`, 
+      { id: routineId },
+      { withCredentials: true }
+    );
+
+    return response.data; // { id, completed }
+  } catch (error) {
+    console.error('루틴 체크 실패:', error);
+    throw error;
+  }
+};

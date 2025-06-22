@@ -12,6 +12,7 @@ import RoutineSection from '../../components/Routine/RoutineSection';
 import { useRoute } from '@react-navigation/native';
 import { fetchRoutinesByDate } from '../../api/routineApi';
 import { format } from 'date-fns'; // 날짜 포맷 라이브러리
+import { toggleRoutineCheck } from '../../api/routineApi'; // 루틴 체크 상태 토글 API
 
 export default function MainPage({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('routine');
@@ -56,12 +57,27 @@ export default function MainPage({ navigation }) {
     setEditModalVisible(false);
   };
 
-  const toggleCheck = (id) => {
-    setRoutines((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
-    );
+  // 루틴 체크 상태 토글 함수
+  const toggleCheck = async (id) => {
+    try {
+      const numericId = parseInt(id.toString().replace(/[^0-9]/g, ''), 10);
+      const result = await toggleRoutineCheck(numericId); // { id: 60, isCompleted: true }
+      console.log('🧾 API 응답 결과:', result); // ✅ 여기에 isCompleted가 true로 오고 있는지 확인
+      console.log('🔽 업데이트 전 상태:', routines);
+      setRoutines((prev) => {
+        const updated = prev.map((item) => {
+          const itemNumericId = parseInt(item.id.toString().replace(/[^0-9]/g, ''), 10);
+          const updatedItem = itemNumericId === result.id
+            ? { ...item, checked: result.completed }
+            : item;
+          console.log('🧩 갱신:', item.id, '→', updatedItem.checked);
+          return updatedItem;
+        });
+        return updated;
+      });
+    } catch (error) {
+      console.error('루틴 체크 실패:', error);
+    }
   };
 
   // 저장된 루틴 GET API로 불러오기 (앱 재시작 시 사용)
@@ -76,7 +92,7 @@ export default function MainPage({ navigation }) {
           id: `server-${routine.id ?? index}`,
           title: routine.content,
           time: routine.timeSlot?.slice(0, 5) ?? '07:30',
-          checked: false,
+          checked: routine.completed ?? false,
         }));
 
         const fromRoute = route.params?.routines?.map((routine, index) => ({
