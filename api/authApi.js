@@ -1,8 +1,6 @@
 import axios from 'axios';
-
-const BASE_URL = 'http://192.168.0.7:8080'; // 지영 집
-// const BASE_URL = 'http://192.168.123.109:8080'; // 유진 집
-//const BASE_URL = 'http://10.30.7.87:8080'; // 유진 학교
+import Constants from 'expo-constants';
+const BASE_URL = Constants.expoConfig.extra.BASE_URL;
 
 export const sendVerificationEmail = (email) => {
   return axios.post(`${BASE_URL}/email-auth`, { email });

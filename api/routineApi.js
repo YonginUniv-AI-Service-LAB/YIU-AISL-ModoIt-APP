@@ -1,11 +1,10 @@
 // routineApi.js
 import axios from 'axios';
 import { format } from 'date-fns';
+import Constants from 'expo-constants';
+const BASE_URL = Constants.expoConfig.extra.BASE_URL;
 
 axios.defaults.withCredentials = true;
-
-const BASE_URL = 'http://192.168.0.7:8080';
-// const BASE_URL = 'http://192.168.123.109:8080'; // 유진 집
 
 // 날짜별 루틴 조회
 export const fetchRoutinesByDate = async (date) => {

@@ -1,9 +1,7 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
+const BASE_URL = Constants.expoConfig.extra.BASE_URL;
 axios.defaults.withCredentials = true;
-
-const BASE_URL = 'http://192.168.0.7:8080'; // 지영 집
-// const BASE_URL = 'http://192.168.123.109:8080'; // 유진 집
-//const BASE_URL = 'http://10.30.7.87:8080'; // 유진 학교
 
 // 감정 + 강도 저장 (사전조사)
 export const savePreResearch = ({ emotion, intensity }) => {
