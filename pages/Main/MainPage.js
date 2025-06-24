@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import styles from './MainPage.styles';
+// 컴포넌트 임포트
 import WeeklyHeader from '../../components/WeeklyHeader/WeeklyHeader';
 import WhiteRoundedContainer from '../../components/common/WhiteRoundedContainer';
 import FloatingActionButton from '../../components/FloatingActionButton/FloatingActionButton';
@@ -9,13 +10,18 @@ import BottomTabBar from '../../components/common/BottomTabBar';
 import AddRoutineModal from '../../components/Modal/AddRoutineModal';
 import EditRoutineModal from '../../components/Modal/EditRoutineModal';
 import RoutineSection from '../../components/Routine/RoutineSection';
+// 유틸 및 API 함수
 import { useRoute } from '@react-navigation/native';
 import { fetchRoutinesByDate } from '../../api/routineApi';
 import { format } from 'date-fns'; // 날짜 포맷 라이브러리
 import { toggleRoutineCheck } from '../../api/routineApi'; // 루틴 체크 상태 토글 API
+import { addRoutine,  getRoutineDetail, editRoutine } from '../../api/routineApi';
 
 export default function MainPage({ navigation }) {
-  const [selectedTab, setSelectedTab] = useState('routine');
+  // ✅ 라우트 파라미터 받기 (예: 추천 루틴)
+  const route = useRoute();
+  // ✅ 상태값 정의
+  // const [selectedTab, setSelectedTab] = useState('routine');
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [hour, setHour] = useState('07');
@@ -23,47 +29,122 @@ export default function MainPage({ navigation }) {
   const [routineText, setRoutineText] = useState('');
   const [routines, setRoutines] = useState([]);
   const [selectedRoutine, setSelectedRoutine] = useState(null);
-  const route = useRoute();
-  const recommendedRoutines = route.params?.routines;
 
+  // ✅ 시간 문자열("HH:mm") → 분으로 변환
   const toMins = (timeStr) => {
+    if (!timeStr) return 0;
     const [h, m] = timeStr.split(':').map((n) => parseInt(n, 10));
     return h * 60 + m;
   };
 
-  const handleAddRoutine = () => {
+  // ✅ 루틴 조회 (추천 루틴 + 저장된 루틴 병합)
+  useEffect(() => {
+    const loadAllRoutines = async () => {
+      try {
+        // 1) 오늘 날짜 문자열 생성
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        // 2) fetchRoutinesByDate에 Date 객체로 전달
+        const res = await fetchRoutinesByDate(new Date(todayStr));
+        // 3) 서버 루틴 매핑
+        const saved = res.data.map((item) => {
+          const rawTime = item.timeSlot ?? item.time_slot;
+          const time =
+            typeof rawTime === 'string' && rawTime.length >= 5
+              ? rawTime.substring(0, 5)
+              : '00:00';
+          return {
+            id: item.id.toString(),
+            time,
+            title: item.content,
+            checked: !!item.completed,
+          };
+        });
+
+        // 4) 추천 받은 프리셋(route.params) 매핑
+        const recommended = (route.params?.routines || []).map((item, idx) => {
+          const rawTime = item.timeSlot ?? item.time_slot;
+          const time =
+            typeof rawTime === 'string' && rawTime.length >= 5
+              ? rawTime.substring(0, 5)
+              : '00:00';
+          return {
+            id: `preset-${item.id ?? idx}`,
+            time,
+            title: item.content ?? '제목 없음',
+            checked: false,
+          };
+        });
+
+        // 5) 병합 + 중복 제거 + 시간 순 정렬
+        const seen = new Set();
+        const merged = [...recommended, ...saved].filter((r) => {
+          const key = `${r.title}-${r.time}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        merged.sort((a, b) => toMins(a.time) - toMins(b.time));
+
+        setRoutines(merged);
+      } catch (error) {
+        console.error('루틴 불러오기 실패:', error);
+      }
+    };
+
+    loadAllRoutines();
+  }, [route.params]);
+
+  // ✅ 루틴 추가 처리 함수
+  const handleAddRoutine = async () => {
     const hh = hour.padStart(2, '0');
     const mm = minute.padStart(2, '0');
-    const newItem = {
-      id: Date.now().toString(),
-      time: `${hh}:${mm}`,
-      title: routineText.trim() || '제목 없음',
-      checked: false,
+    const newRoutine = {
+      timeSlot: `${hh}:${mm}`,
+      content: routineText.trim() || '제목 없음',
     };
-    setRoutines((prev) =>
-      [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
-    );
-    setHour('07');
-    setMinute('30');
-    setRoutineText('');
-    setAddModalVisible(false);
+
+    try {
+      const res = await addRoutine(newRoutine);
+      const returned = res.data || {};
+      const idStr =
+        returned.id != null ? returned.id.toString() : Date.now().toString();
+
+      const newItem = {
+        id: idStr,
+        time: returned.timeSlot?.slice(0, 5) ?? newRoutine.timeSlot,
+        title: returned.content ?? newRoutine.content,
+        checked: !!returned.isCompleted,
+      };
+
+      setRoutines((prev) => [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time)));
+      setHour('07');
+      setMinute('30');
+      setRoutineText('');
+      setAddModalVisible(false);
+    } catch (error) {
+      console.error('루틴 추가 실패:', error);
+    }
   };
 
-  const handleSaveEdited = (updated) => {
-    setRoutines((prev) =>
-      prev.map((item) => (item.id === updated.id ? updated : item))
-    );
-    setSelectedRoutine(null);
-    setEditModalVisible(false);
+  // ✅ 루틴 수정 처리 함수
+  const handleSaveEdited = async (updated) => {
+    try {
+      await editRoutine({ id: updated.id, timeSlot: updated.time, content: updated.title });
+      setRoutines((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+    } catch (error) {
+      console.error('루틴 수정 실패:', error);
+    } finally {
+      setSelectedRoutine(null);
+      setEditModalVisible(false);
+    }
   };
 
-  // 루틴 체크 상태 토글 함수
+  // ✅ 루틴 체크 상태 토글 함수
   const toggleCheck = async (id) => {
     try {
       const numericId = parseInt(id.toString().replace(/[^0-9]/g, ''), 10);
       const result = await toggleRoutineCheck(numericId); // { id: 60, isCompleted: true }
       console.log('🧾 API 응답 결과:', result); // ✅ 여기에 isCompleted가 true로 오고 있는지 확인
-      console.log('🔽 업데이트 전 상태:', routines);
       setRoutines((prev) => {
         const updated = prev.map((item) => {
           const itemNumericId = parseInt(item.id.toString().replace(/[^0-9]/g, ''), 10);
@@ -80,54 +161,35 @@ export default function MainPage({ navigation }) {
     }
   };
 
-  // 저장된 루틴 GET API로 불러오기 (앱 재시작 시 사용)
-  useEffect(() => {
-    const loadRoutines = async () => {
-      const todayStr = format(new Date(), 'yyyy-MM-dd');
-      try {
-        const response = await fetchRoutinesByDate(todayStr);
-        const serverData = response.data;
+  // ✅ 루틴 상세 조회 후 편집 모달 오픈
+  const onPressRoutine = async (item) => {
+    try {
+      const res = await getRoutineDetail(item.id);
+      const rawTime = res.data.timeSlot ?? res.data.time_slot;
+      const time =
+        typeof rawTime === 'string' && rawTime.length >= 5
+          ? rawTime.substring(0, 5)
+          : '00:00';
+      setSelectedRoutine({
+        id: res.data.id.toString(),
+        time,
+        title: res.data.content,
+      });
+      setEditModalVisible(true);
+    } catch (error) {
+      console.error('상세 조회 실패:', error);
+    }
+  };
 
-        const fromServer = serverData.map((routine, index) => ({
-          id: `server-${routine.id ?? index}`,
-          title: routine.content,
-          time: routine.timeSlot?.slice(0, 5) ?? '07:30',
-          checked: routine.completed ?? false,
-        }));
-
-        const fromRoute = route.params?.routines?.map((routine, index) => ({
-          id: `preset-${routine.id ?? index}`,
-          title: routine.content,
-          time: routine.time, // 추천 루틴은 time 포함되어 있으므로 그대로 사용
-          checked: false,
-        })) ?? [];
-
-        // 병합 + 중복 제거
-        setRoutines((prev) => {
-          const existing = prev.map((r) => `${r.title}-${r.time}`);
-          const all = [...fromServer, ...fromRoute];
-          const unique = all.filter(
-            (r) => !existing.includes(`${r.title}-${r.time}`)
-          );
-          return [...prev, ...unique].sort((a, b) => toMins(a.time) - toMins(b.time));
-        });
-      } catch (err) {
-        console.error('루틴 불러오기 실패:', err);
-      }
-    };
-
-    loadRoutines();
-  }, [route.params]);
-
-  // 날짜 및 주간 헤더 준비
+  // ✅ 주간 날짜 리스트 생성 (WeeklyHeader용)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const getStartOfWeek = (date) => {
-    const d = new Date(date);
+  const getStartOfWeek = (d) => {
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    d.setDate(diff);
-    return d;
+    const start = new Date(d);
+    start.setDate(diff);
+    return start;
   };
   const baseDate = getStartOfWeek(today);
   const dateList = Array.from({ length: 7 }, (_, i) => {
@@ -137,51 +199,28 @@ export default function MainPage({ navigation }) {
   });
   const currentMonth = today.getMonth() + 1;
 
-  // 시간별 그룹핑
+  // ✅ 시간대별 루틴 분류
   const grouped = { morning: [], lunch: [], evening: [] };
   routines.forEach((item) => {
-    const m = toMins(item.time);
-    if (m < 12 * 60) grouped.morning.push(item);
-    else if (m <= 16 * 60) grouped.lunch.push(item);
+    const mins = toMins(item.time);
+    if (mins <= 720) grouped.morning.push(item);
+    else if (mins <= 960) grouped.lunch.push(item);
     else grouped.evening.push(item);
   });
 
-  const onPressRoutine = (item) => {
-    setSelectedRoutine(item);
-    setEditModalVisible(true);
-  };
-
+  // ✅ 루틴 탭 렌더링
   const renderRoutineTab = () => (
     <View style={styles.routineWrapper}>
       <WhiteRoundedContainer style={styles.whiteContainer}>
         <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-          <RoutineSection
-            title="아침"
-            data={grouped.morning}
-            onToggle={toggleCheck}
-            onPressItem={onPressRoutine}
-            onPress={onPressRoutine}
-          />
-          <RoutineSection
-            title="점심"
-            data={grouped.lunch}
-            onToggle={toggleCheck}
-            onPressItem={onPressRoutine}
-            onPress={onPressRoutine}
-          />
-          <RoutineSection
-            title="저녁"
-            data={grouped.evening}
-            onToggle={toggleCheck}
-            onPressItem={onPressRoutine}
-            onPress={onPressRoutine}
-          />
+          <RoutineSection title="아침" data={grouped.morning} onToggle={toggleCheck} onPressItem={onPressRoutine} />
+          <RoutineSection title="점심" data={grouped.lunch} onToggle={toggleCheck} onPressItem={onPressRoutine} />
+          <RoutineSection title="저녁" data={grouped.evening} onToggle={toggleCheck} onPressItem={onPressRoutine} />
           <TouchableOpacity
             style={styles.endButton}
             onPress={() => {
-              // 수정된 부분: 체크되지 않은 루틴만 필터링하여 첫 번째 피드백 화면으로 전달
-              const unchecked = routines.filter((item) => !item.checked);
-              const checked = routines.filter((item) => item.checked);
+              const unchecked = routines.filter((i) => !i.checked);
+              const checked = routines.filter((i) => i.checked);
               navigation.navigate('FeedbackCard', { unchecked, checked });
             }}
           >
@@ -192,25 +231,7 @@ export default function MainPage({ navigation }) {
     </View>
   );
 
-  const renderEmpty = (text) => (
-    <WhiteRoundedContainer style={styles.emptyContainer}>
-      <Text style={styles.pageText}>{text}</Text>
-    </WhiteRoundedContainer>
-  );
-
-  const renderContent = () => {
-    switch (selectedTab) {
-      case 'routine':
-        return renderRoutineTab();
-      case 'feedback':
-        return renderEmpty('💬 피드백 카드 (준비 중)');
-      case 'sample':
-        return renderEmpty('🍕 맛보기 루틴 (준비 중)');
-      default:
-        return null;
-    }
-  };
-
+  // ✅ 화면 렌더링
   return (
     <View style={styles.container}>
       <WeeklyHeader
@@ -218,7 +239,8 @@ export default function MainPage({ navigation }) {
         currentMonth={currentMonth}
         today={today}
       />
-      {renderContent()}
+      {renderRoutineTab()}
+
       <AddRoutineModal
         visible={addModalVisible}
         onClose={() => setAddModalVisible(false)}
@@ -231,7 +253,6 @@ export default function MainPage({ navigation }) {
         onAdd={handleAddRoutine}
       />
 
-      {/* 편집 모달 */}
       <EditRoutineModal
         visible={editModalVisible}
         routineItem={selectedRoutine}
@@ -241,8 +262,9 @@ export default function MainPage({ navigation }) {
           setSelectedRoutine(null);
         }}
       />
+
       <FloatingActionButton onPress={() => setAddModalVisible(true)} />
-      {/* 하단 탭 */}
+
       <BottomTabBar
         currentTab="routine"
         onTabPress={(tab) => {

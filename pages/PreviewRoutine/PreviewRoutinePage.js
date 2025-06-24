@@ -13,7 +13,10 @@ import RoutinePreviewCard from '../../components/Card/RoutinePreviewCard';
 import { SNAP_WIDTH } from '../../components/Card/RoutinePreviewCard.styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
-import { fetchRecommendedRoutines, saveRecommendedRoutines } from '../../api/recommendationApi';
+import {
+  fetchRecommendedRoutines,
+  saveRecommendedRoutines,
+} from '../../api/recommendationApi';
 
 const { width } = Dimensions.get('window');
 
@@ -59,7 +62,11 @@ export default function PreviewRoutinePage({ navigation }) {
     const fetchData = async () => {
       // 파라미터 검증을 먼저 실행
       if (!emotion || !intensity || !category) {
-        console.log('파라미터 누락 - API 호출 중단:', { emotion, intensity, category });
+        console.log('파라미터 누락 - API 호출 중단:', {
+          emotion,
+          intensity,
+          category,
+        });
         setLoading(false);
         return;
       }
@@ -102,7 +109,7 @@ export default function PreviewRoutinePage({ navigation }) {
     if (!routineCards[currentIndex]) return;
 
     // 현재 선택된 카드에서 루틴 리스트 추출
-    const selected = routineCards[currentIndex]; 
+    const selected = routineCards[currentIndex];
     const selectedRoutines = selected.routines;
 
     try {
@@ -114,7 +121,7 @@ export default function PreviewRoutinePage({ navigation }) {
         id: routine.id,
         emotion: parseInt(emotion),
         difficulty: parseInt(intensity),
-        category: parseInt(category), 
+        category: parseInt(category),
         content: routine.content,
         time_slot: routine.time_slot,
         // user_id: parseInt(userId),
@@ -138,7 +145,6 @@ export default function PreviewRoutinePage({ navigation }) {
       }));
 
       navigation.navigate('Main', { routines: routinesForMain });
-
     } catch (error) {
       console.error('추천 루틴 저장 실패:', error);
     }
@@ -176,7 +182,8 @@ export default function PreviewRoutinePage({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <Text style={styles.titleText}>
-        {userName}님을 위한{'\n'}맛보기 루틴이 준비되었어요!{'\n'}이제 시작해볼까요?
+        {userName}님을 위한{'\n'}맛보기 루틴이 준비되었어요!{'\n'}이제
+        시작해볼까요?
       </Text>
 
       {loading ? (
