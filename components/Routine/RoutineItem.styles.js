@@ -23,6 +23,9 @@ export default StyleSheet.create({
     paddingHorizontal: px(16),
     position: 'relative',
   },
+  routineBoxChecked: {
+    backgroundColor: '#F0F0FF', // 체크되었을 때 연보라색 배경
+  },
   leftBar: {
     position: 'absolute',
     left: 0,

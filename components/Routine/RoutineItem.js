@@ -3,14 +3,18 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import styles from './RoutineItem.styles';
 
 export default function RoutineItem({ item, onToggle, onPressItem }) {
-  console.log('✅ checked 상태:', item.id, item.checked);
+  console.log('✅ checked 상태:', item.id, item.checked); // 상태 확인용 로그
+
   return (
     <View style={styles.itemRow}>
-      {/* 터치하면 편집 모달 열기 */}
+      {/* 루틴 정보 박스 */}
       <TouchableOpacity
-        style={styles.routineBox}
+        style={[
+          styles.routineBox,
+          item.checked && styles.routineBoxChecked, // 체크되었을 때 배경색 변경
+        ]}
         activeOpacity={0.7}
-        onPress={onPressItem} // ← 추가
+        onPress={onPressItem} // 루틴 박스 클릭 시 편집 모달 열기
       >
         {/* 왼쪽 라인 */}
         <View style={styles.leftBar} />
@@ -29,6 +33,7 @@ export default function RoutineItem({ item, onToggle, onPressItem }) {
             item.checked && styles.itemCircleChecked
           ]}
         >
+          {/* 체크된 경우에만 체크 아이콘 보여주기 */}
           {item.checked && (
             <Image
               source={require('../../assets/images/whitecheck.png')} // 체크 아이콘 이미지

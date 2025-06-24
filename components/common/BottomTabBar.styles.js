@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     position: 'absolute',  // 화면 하단 고정
     bottom: 0,
     width: width,
-    height: 106,
+    height: 105,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',  // 가로 정렬
     justifyContent: 'space-around',
@@ -32,6 +32,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: width * 0.038,
     fontWeight: '500',
+  },
+  icon: {
+    width: 26,
+    height: 26,
+    marginBottom: 6,
+    resizeMode: 'contain',
   },
 });
 

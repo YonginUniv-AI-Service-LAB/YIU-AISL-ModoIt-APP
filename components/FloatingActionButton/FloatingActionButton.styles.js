@@ -15,11 +15,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#7A73FF',
     justifyContent: 'center',
     alignItems: 'center',
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 4 },
-    // shadowOpacity: 0.3,
-    // shadowRadius: 5,
-    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
   },
   fabText: {
     fontSize: size * 0.8,     // 버튼 내 기호 크기
