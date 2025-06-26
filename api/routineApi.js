@@ -18,7 +18,7 @@ export const fetchRoutinesByDate = async (date) => {
 export const toggleRoutineCheck = async (routineId) => {
   try {
     const response = await axios.post(
-      `${BASE_URL}/check-routine`, 
+      `${BASE_URL}/check-routine`,
       { id: routineId },
       { withCredentials: true }
     );
@@ -56,9 +56,8 @@ export const getRoutinesByDate = (date) => {
   });
 };
 
-export const finishRoutine = ({ checked, unchecked }) => {
-  return axios.post(`${BASE_URL}/finish`, {
-    checked,
-    unchecked,
+export const finishRoutine = (routineStatusList) => {
+  return axios.post(`${BASE_URL}/finish`, routineStatusList, {
+    withCredentials: true,
   });
 };

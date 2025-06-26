@@ -15,7 +15,12 @@ import { useRoute } from '@react-navigation/native';
 import { fetchRoutinesByDate } from '../../api/routineApi';
 import { format } from 'date-fns'; // 날짜 포맷 라이브러리
 import { toggleRoutineCheck } from '../../api/routineApi'; // 루틴 체크 상태 토글 API
-import { addRoutine,  getRoutineDetail, editRoutine } from '../../api/routineApi';
+import {
+  addRoutine,
+  getRoutineDetail,
+  editRoutine,
+  finishRoutine,
+} from '../../api/routineApi';
 
 export default function MainPage({ navigation }) {
   // ✅ 라우트 파라미터 받기 (예: 추천 루틴)
@@ -116,7 +121,9 @@ export default function MainPage({ navigation }) {
         checked: !!returned.isCompleted,
       };
 
-      setRoutines((prev) => [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time)));
+      setRoutines((prev) =>
+        [...prev, newItem].sort((a, b) => toMins(a.time) - toMins(b.time))
+      );
       setHour('07');
       setMinute('30');
       setRoutineText('');
@@ -129,8 +136,14 @@ export default function MainPage({ navigation }) {
   // ✅ 루틴 수정 처리 함수
   const handleSaveEdited = async (updated) => {
     try {
-      await editRoutine({ id: updated.id, timeSlot: updated.time, content: updated.title });
-      setRoutines((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      await editRoutine({
+        id: updated.id,
+        timeSlot: updated.time,
+        content: updated.title,
+      });
+      setRoutines((prev) =>
+        prev.map((item) => (item.id === updated.id ? updated : item))
+      );
     } catch (error) {
       console.error('루틴 수정 실패:', error);
     } finally {
@@ -147,10 +160,14 @@ export default function MainPage({ navigation }) {
       console.log('🧾 API 응답 결과:', result); // ✅ 여기에 isCompleted가 true로 오고 있는지 확인
       setRoutines((prev) => {
         const updated = prev.map((item) => {
-          const itemNumericId = parseInt(item.id.toString().replace(/[^0-9]/g, ''), 10);
-          const updatedItem = itemNumericId === result.id
-            ? { ...item, checked: result.completed }
-            : item;
+          const itemNumericId = parseInt(
+            item.id.toString().replace(/[^0-9]/g, ''),
+            10
+          );
+          const updatedItem =
+            itemNumericId === result.id
+              ? { ...item, checked: result.completed }
+              : item;
           console.log('🧩 갱신:', item.id, '→', updatedItem.checked);
           return updatedItem;
         });
@@ -213,15 +230,43 @@ export default function MainPage({ navigation }) {
     <View style={styles.routineWrapper}>
       <WhiteRoundedContainer style={styles.whiteContainer}>
         <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-          <RoutineSection title="아침" data={grouped.morning} onToggle={toggleCheck} onPressItem={onPressRoutine} />
-          <RoutineSection title="점심" data={grouped.lunch} onToggle={toggleCheck} onPressItem={onPressRoutine} />
-          <RoutineSection title="저녁" data={grouped.evening} onToggle={toggleCheck} onPressItem={onPressRoutine} />
+          <RoutineSection
+            title="아침"
+            data={grouped.morning}
+            onToggle={toggleCheck}
+            onPressItem={onPressRoutine}
+          />
+          <RoutineSection
+            title="점심"
+            data={grouped.lunch}
+            onToggle={toggleCheck}
+            onPressItem={onPressRoutine}
+          />
+          <RoutineSection
+            title="저녁"
+            data={grouped.evening}
+            onToggle={toggleCheck}
+            onPressItem={onPressRoutine}
+          />
           <TouchableOpacity
             style={styles.endButton}
-            onPress={() => {
-              const unchecked = routines.filter((i) => !i.checked);
-              const checked = routines.filter((i) => i.checked);
-              navigation.navigate('FeedbackCard', { unchecked, checked });
+            onPress={async () => {
+              // 1) 완료/미완료 루틴 id와 상태를 DTO 형태로 변환
+              const payload = routines.map((r) => ({
+                id: parseInt(r.id, 10),
+                isCompleted: r.checked,
+              }));
+
+              try {
+                await finishRoutine(payload); // 2) 서버에 종료 보고
+                // 성공 시 Feedback 화면으로 이동
+                navigation.navigate('FeedbackCard', {
+                  checked: payload.filter((p) => p.isCompleted),
+                  unchecked: payload.filter((p) => !p.isCompleted),
+                });
+              } catch (err) {
+                console.error('루틴 종료 보고 실패:', err);
+              }
             }}
           >
             <Text style={styles.endButtonText}>끝내기</Text>
