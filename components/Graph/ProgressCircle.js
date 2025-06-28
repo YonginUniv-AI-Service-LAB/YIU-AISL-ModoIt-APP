@@ -5,8 +5,8 @@ import CircularProgress from 'react-native-circular-progress-indicator';
 const { width } = Dimensions.get('window');
 const px = (value) => (width / 390) * value;
 
-export default function ProgressCircle() {
-  const progressValue = 70; // 임시 데이터 값
+export default function ProgressCircle({ value }) {
+  const progressValue = Math.round(value); // 백엔드에서 받은 실수
 
   return (
     <View style={styles.container}>
