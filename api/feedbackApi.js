@@ -12,3 +12,7 @@ export const getFeedbackAchievementRate = () => {
 // 감정 & 강도 저장
 export const submitFeedback = (payload) =>
   axios.post(`${BASE_URL}/feedback-card`, payload);
+
+// 완료하지 않은 루틴 조회
+export const getUncheckedRoutines = () =>
+  axios.get(`${BASE_URL}/delect-routine`);

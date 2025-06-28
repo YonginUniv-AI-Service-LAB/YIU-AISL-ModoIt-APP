@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import styles from './FeedbackCardPage2.styles';
 import WhiteRoundedContainer from '../../components/common/WhiteRoundedContainer';
@@ -7,12 +7,34 @@ import BottomTabBar from '../../components/common/BottomTabBar';
 import ProgressCircle from '../../components/Graph/ProgressCircle';
 import routineStyles from '../../components/Routine/RoutineItem.styles';
 import sectionStyles from '../../components/Routine/RoutineSection.styles';
+import {
+  getFeedbackAchievementRate,
+  getUncheckedRoutines,
+} from '../../api/feedbackApi';
 
 const { width, height } = Dimensions.get('window');
 
-export default function FeedbackCardPage({ navigation, route }) {
+export default function FeedbackCardPage2({ navigation, route }) {
   // 변경된 부분: route.params에서 전달된 체크되지 않은 루틴 가져오기
-  const { unchecked, checked } = route.params;
+  const { checked } = route.params;
+  const [uncheckedList, setUncheckedList] = useState([]);
+  const [achievementRate, setAchievementRate] = useState(0);
+
+  useEffect(() => {
+    // 최초 렌더링 시 서버에서 성취율 호출
+    getFeedbackAchievementRate()
+      .then((res) => {
+        setAchievementRate(res.data.achievementRate);
+      })
+      .catch((err) => {
+        console.error('피드백카드 호출 실패', err);
+      });
+
+    // 오늘 완료하지 않은 루틴 가져오기
+    getUncheckedRoutines()
+      .then((res) => setUncheckedList(res.data))
+      .catch((err) => console.error('미완료 루틴 조회 실패', err));
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -25,7 +47,7 @@ export default function FeedbackCardPage({ navigation, route }) {
       <WhiteRoundedContainer style={styles.whiteContainer}>
         {/* 퍼센트 그래프 추가 */}
         <View style={localStyles.progressWrapper}>
-          <ProgressCircle />
+          <ProgressCircle value={achievementRate} />
         </View>
 
         {/* 진행하지 않은 루틴 헤더 */}
@@ -39,13 +61,13 @@ export default function FeedbackCardPage({ navigation, route }) {
           {/* ↓↓ 수정된 부분: 섹션 헤더와 아이템 렌더링 */}
           <View style={sectionStyles.sectionContainer}>
             {/* TODO: 추후 API 연결 할 때 수정할 부분 */}
-            {unchecked.map((item) => (
+            {uncheckedList?.map((item) => (
               <View key={item.id} style={routineStyles.itemRow}>
                 <View style={routineStyles.routineBox}>
                   <View style={routineStyles.leftBar} />
                   <View style={routineStyles.itemTextContainer}>
-                    <Text style={routineStyles.itemTime}>{item.time}</Text>
-                    <Text style={routineStyles.itemTitle}>{item.title}</Text>
+                    <Text style={routineStyles.itemTime}>{item.timeSlot}</Text>
+                    <Text style={routineStyles.itemTitle}>{item.content}</Text>
                   </View>
                 </View>
               </View>
@@ -57,10 +79,12 @@ export default function FeedbackCardPage({ navigation, route }) {
       {/* 다음 버튼 */}
       <NextButton
         onPress={() =>
-          navigation.navigate('FeedbackCard3', { unchecked, checked })
+          navigation.navigate('FeedbackCard3', {
+            unchecked: uncheckedList,
+            checked,
+          })
         }
-      >
-      </NextButton>
+      ></NextButton>
 
       <BottomTabBar currentTab="routine" onTabPress={() => {}} />
     </View>
