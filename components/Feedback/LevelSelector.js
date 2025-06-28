@@ -1,25 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import styles from './LevelSelector.styles';
 
-export default function LevelSelector({ title, selectedLevel = null, onSelect }) {
-  const levels = [1, 2, 3, 4, 5];
+export default function LevelSelector({
+  title,
+  selectedLevel = null,
+  onSelect,
+}) {
+  // 5개의 원: 메인(1), 중간(1), 메인(2), 중간(2), 메인(3)
+  const circles = [
+    { type: 'main', level: 1 },
+    { type: 'between', level: 1 }, // 1-2 사이는 1
+    { type: 'main', level: 2 },
+    { type: 'between', level: 2 }, // 2-3 사이는 2
+    { type: 'main', level: 3 },
+  ];
 
+  // 클릭된 원(index)만 하이라이트하기 위한 state
+  const [selectedIdx, setSelectedIdx] = useState(null);
+
+  // 레벨별 이미지 매핑 (1,2,3 모두 표시)
   const getEmotionImage = (level, isSelected) => {
     switch (level) {
       case 1:
-        return isSelected ? require('../../assets/images/emotion_sad2.png') : require('../../assets/images/emotion_sad.png');
+        return isSelected
+          ? require('../../assets/images/emotion_sad2.png')
+          : require('../../assets/images/emotion_sad.png');
+      case 2:
+        return isSelected
+          ? require('../../assets/images/emotion_neutral2.png')
+          : require('../../assets/images/emotion_neutral.png');
       case 3:
-        return isSelected ? require('../../assets/images/emotion_neutral2.png') : require('../../assets/images/emotion_neutral.png');
-      case 5:
-        return isSelected ? require('../../assets/images/emotion_happy2.png') : require('../../assets/images/emotion_happy.png');
+        return isSelected
+          ? require('../../assets/images/emotion_happy2.png')
+          : require('../../assets/images/emotion_happy.png');
       default:
         return null;
     }
-  };
-
-  const shouldShowImage = (level) => {
-    return level === 1 || level === 3 || level === 5;
   };
 
   return (
@@ -27,27 +44,34 @@ export default function LevelSelector({ title, selectedLevel = null, onSelect })
       <Text style={styles.title}>{title}</Text>
       <View style={styles.selectorContainer}>
         <View style={styles.circleRow}>
-          {levels.map((level) => (
-            <View key={level} style={styles.circleContainer}>
+          {circles.map((item, idx) => {
+            const isMain = item.type === 'main';
+            const isActive = selectedIdx === idx;
+
+            return (
               <TouchableOpacity
+                key={idx}
                 style={[
                   styles.circle,
-                  selectedLevel === level && styles.activeCircle,
-                  (level === 1 || level === 3 || level === 5) && styles.largeCircle,
-                  styles.circleWithImage, // 중앙 정렬을 위한 스타일 추가
+                  isActive && styles.activeCircle, // 클릭된 인덱스만 하이라이트
+                  isMain && styles.largeCircle, // 메인(1,2,3) 원만 크게
+                  isMain && styles.circleWithImage, // 메인 원만 이미지 컨테이너
                 ]}
-                onPress={() => onSelect(level)}
+                onPress={() => {
+                  setSelectedIdx(idx);
+                  onSelect(item.level);
+                }}
               >
-                {shouldShowImage(level) && (
+                {isMain && (
                   <Image
-                    source={getEmotionImage(level, selectedLevel === level)}
+                    source={getEmotionImage(item.level, isActive)}
                     style={styles.emotionImage}
                     resizeMode="contain"
                   />
                 )}
               </TouchableOpacity>
-            </View>
-          ))}
+            );
+          })}
         </View>
         <View style={styles.labelRow}>
           <Text style={styles.bottomLabel}>힘들어요</Text>

@@ -16,3 +16,7 @@ export const submitFeedback = (payload) =>
 // 완료하지 않은 루틴 조회
 export const getUncheckedRoutines = () =>
   axios.get(`${BASE_URL}/delect-routine`);
+
+// 추천 루틴 조회
+export const getRecommendations = () =>
+  axios.get(`${BASE_URL}/recommend-routine`);

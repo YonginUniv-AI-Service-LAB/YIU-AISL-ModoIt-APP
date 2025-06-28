@@ -13,39 +13,37 @@ import NextButton from '../../components/Button/NextButton';
 import BottomTabBar from '../../components/common/BottomTabBar';
 import ProgressCircle from '../../components/Graph/ProgressCircle';
 import sectionStyles from '../../components/Routine/RoutineSection.styles';
+import {
+  getFeedbackAchievementRate,
+  getRecommendations,
+  // submitRecommendations, // 나중에 저장용 POST가 필요하면 이걸 사용
+} from '../../api/feedbackApi';
 
 const { width, height } = Dimensions.get('window');
 
 export default function FeedbackCardPage3({ navigation, route }) {
-  // 임시 데이터
-  const { unchecked, checked } = route.params;
-  const [options] = useState([
-    '2분동안 명상하기',
-    '10분동안 달리기',
-    '행복회로 돌리기',
-    '잠자기 전 핸드폰 꺼두기',
-  ]);
-  const [selected, setSelected] = useState([]);
-  const [loading] = useState(false);
-  const [submitting] = useState(false);
+  const { unchecked, checked /*, emotion, intensity */ } = route.params;
+  const [achievementRate, setAchievementRate] = useState(0);
 
-  // 여러 개 선택 토글
-  const toggleOption = (opt) => {
-    const curr = selected || []; //안전장치
-    if (curr.includes(opt)) {
-      setSelected(curr.filter((o) => o !== opt));
-    } else {
-      setSelected([...curr, opt]);
-    }
-  };
+  // 추천 루틴 목록: { id: number, content: string } 배열
+  const [options, setOptions] = useState([]);
+  const [selected, setSelected] = useState([]); // 선택된 id 배열
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  /*
-  // 추천 루틴 옵션 API에서 불러오기
+  // 1) 성취율 조회
+  useEffect(() => {
+    getFeedbackAchievementRate()
+      .then((res) => setAchievementRate(res.data.achievementRate))
+      .catch((err) => console.error('피드백카드 호출 실패', err));
+  }, []);
+
+  // 2) 오늘 상태 기반 추천 루틴 조회 (4개 무작위)
   useEffect(() => {
     const fetchOptions = async () => {
       setLoading(true);
       try {
-        const response = await feedbackApi.getRecommendations();
+        const response = await getRecommendations();
         setOptions(response.data);
       } catch (error) {
         console.error('추천 루틴 불러오기 실패:', error);
@@ -55,20 +53,20 @@ export default function FeedbackCardPage3({ navigation, route }) {
     };
     fetchOptions();
   }, []);
-  */
 
+  // 3) 여러 개 선택 토글 (id 기준)
+  const toggleOption = (id) => {
+    if (selected.includes(id)) {
+      setSelected(selected.filter((o) => o !== id));
+    } else {
+      setSelected([...selected, id]);
+    }
+  };
+
+  // 4) 다음 버튼 핸들러 (선택된 id 전달)
   const handleNext = () => {
     if (selected.length === 0) return;
-    /*
-    setSubmitting(true);
-    try {
-      await feedbackApi.submitRecommendation({ recommendation: selected });
-    } catch (error) {
-      console.error('추천 전송 실패:', error);
-    } finally {
-      setSubmitting(false);
-    }
-    */
+    // -- 저장 POST가 필요하면 여기서 submitRecommendations 호출 --
     navigation.navigate('RoutineDelete', { unchecked, checked, selected });
   };
 
@@ -76,46 +74,43 @@ export default function FeedbackCardPage3({ navigation, route }) {
     <View style={styles.container}>
       <View style={styles.purpleHeader} />
       <Text style={styles.headerText}>오늘 너무 잘했어요!</Text>
-      {/* 아래 카드 영역 */}
       <WhiteRoundedContainer>
-        {/* 퍼센트 그래프 추가 */}
         <View style={localStyles.progressWrapper}>
-          <ProgressCircle />
+          <ProgressCircle value={achievementRate} />
         </View>
-
         <Text style={sectionStyles.sectionHeader}>다른 루틴 추천</Text>
 
         {loading ? (
           <ActivityIndicator
             size="large"
             color="#7A73FF"
-            style={{ marginTop: px(20) }}
+            style={{ marginTop: 20 }}
           />
         ) : (
           <View style={styles.optionsWrapper}>
-            {options.map((opt, idx) => (
+            {options.map((opt) => (
               <TouchableOpacity
-                key={idx}
+                key={opt.id}
                 style={[
                   styles.optionButton,
-                  selected.includes(opt) && styles.selectedButton,
+                  selected.includes(opt.id) && styles.selectedButton,
                 ]}
-                onPress={() => toggleOption(opt)}
+                onPress={() => toggleOption(opt.id)}
               >
                 <Text
                   style={[
                     styles.optionText,
-                    selected.includes(opt) && styles.selectedText,
+                    selected.includes(opt.id) && styles.selectedText,
                   ]}
                 >
-                  {opt}
+                  {opt.content}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
         )}
       </WhiteRoundedContainer>
-      {/* 다음 버튼 */}
+
       <NextButton
         onPress={handleNext}
         disabled={selected.length === 0 || loading || submitting}
@@ -134,7 +129,7 @@ export default function FeedbackCardPage3({ navigation, route }) {
 
 const localStyles = StyleSheet.create({
   progressWrapper: {
-    marginTop: -height * 0.125, // 약 -105px → 844 기준
-    marginBottom: height * 0.018, // 약 15px
+    marginTop: -height * 0.125,
+    marginBottom: height * 0.018,
   },
 });
