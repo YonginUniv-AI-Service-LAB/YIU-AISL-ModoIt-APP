@@ -30,6 +30,7 @@ export const toggleRoutineCheck = async (routineId) => {
   }
 };
 
+
 export const addRoutine = ({ timeSlot, content }) => {
   return axios.post(`${BASE_URL}/add-routine`, {
     timeSlot,
@@ -60,4 +61,14 @@ export const finishRoutine = (routineStatusList) => {
   return axios.post(`${BASE_URL}/finish`, routineStatusList, {
     withCredentials: true,
   });
+};
+
+// 삭제 가능한 루틴 리스트 조회
+export const fetchRoutinesForEdit = () => {
+  return axios.get(`${BASE_URL}/edit-routine`);
+};
+
+// 루틴 삭제 요청 (추후에 연결)
+export const deleteRoutines = (routineIdList) => {
+  return axios.post(`${BASE_URL}/edit-routine`, routineIdList);
 };

@@ -1,5 +1,4 @@
 // RoutineDeletePage.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Text,
@@ -15,41 +14,47 @@ import {
 } from 'react-native-gesture-handler';
 import styles from './RoutineDeletePage.styles';
 import NextButton from '../../components/Button/FinishButton';
+import { fetchRoutinesForEdit } from '../../api/routineApi';
 
 const { width, height } = Dimensions.get('window');
 
 export default function RoutineDeletePage({ navigation, route }) {
-  const { unchecked = [], checked = [], selected = [] } = route.params || {};
+  const [items, setItems] = useState([]); // 전체 루틴 목록
+  const [selectedItems, setSelectedItems] = useState(new Set()); // 선택된 루틴 ID 집합
 
-  // 문자열 배열(string) → { id, time, title } 형식으로 변환
+  // ✅ 서버에서 받아온 루틴 데이터를 정규화
   const normalize = (list) =>
-    list.map((it, idx) => {
-      if (typeof it === 'string') {
-        return { id: `opt-${idx}`, time: '', title: it };
-      }
-      return {
-        id: it.id?.toString() ?? `${idx}`,
-        time: it.time ?? '',
-        title: it.title ?? '',
-      };
-    });
+    list.map((it, idx) => ({
+      id: it.id?.toString() ?? `${idx}`,
+      time: it.time ?? it.timeSlot ?? '',  
+      title: it.title ?? it.content ?? '',
+    }));
 
-  const [items, setItems] = useState([]);
-  const [selectedItems, setSelectedItems] = useState(new Set()); // 선택된 아이템 관리
-
+  // ✅ 페이지 마운트 시 삭제 가능한 루틴 목록 불러오기  
   useEffect(() => {
-    // MainPage에서 넘어온 두 그룹을 합쳐서 렌더링
-    const normalizedItems = normalize([...unchecked, ...checked, ...selected]);
-    setItems(normalizedItems);
-    setSelectedItems(new Set());
-  }, [unchecked, checked, selected]);
+    const loadRoutines = async () => {
+      try {
+        const res = await fetchRoutinesForEdit();
+        const fetched = res.data || [];
+        console.log('📦 받아온 루틴:', fetched);
+        const normalizedItems = normalize(fetched);
+        setItems(normalizedItems);
+        setSelectedItems(new Set());
+      } catch (err) {
+        console.error('❌ 루틴 조회 실패:', err);
+      }
+    };
 
+    loadRoutines();
+  }, []);
+
+  // ✅ 시간 문자열("08:00")을 분 단위 숫자로 변환하는 함수
   const toMins = (t) => {
     const [h, m] = (t || '').split(':').map((n) => parseInt(n, 10) || 0);
     return h * 60 + m;
   };
 
-  // 시간대별 그룹핑 (아침, 점심, 저녁)
+  // ✅ 시간대별 그룹핑 (아침, 점심, 저녁)
   const grouped = { morning: [], lunch: [], evening: [] };
   items.forEach((it) => {
     const mins = toMins(it.time);
@@ -58,7 +63,7 @@ export default function RoutineDeletePage({ navigation, route }) {
     else grouped.evening.push(it);
   });
 
-  // 선택 토글 함수
+  // ✅ 선택 상태 토글 함수
   const toggleSelection = (id) => {
     setSelectedItems((prev) => {
       const newSet = new Set(prev);
@@ -68,7 +73,7 @@ export default function RoutineDeletePage({ navigation, route }) {
     });
   };
 
-  // 삭제 함수
+  // ✅ 루틴 삭제 시 리스트에서 제거
   const remove = (id) => {
     setItems((prev) => prev.filter((i) => i.id !== id));
     setSelectedItems((prev) => {
@@ -81,7 +86,6 @@ export default function RoutineDeletePage({ navigation, route }) {
   // 각 루틴 아이템 컴포넌트
   const Item = ({ item }) => {
     const isSelected = selectedItems.has(item.id);
-
     // Swipeable ref: 문턱 넘었을 때 상태 업데이트용
     const swipeableRef = useRef(null);
 

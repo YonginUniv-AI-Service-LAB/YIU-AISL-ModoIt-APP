@@ -21,6 +21,10 @@ export const getUncheckedRoutines = () =>
 export const getRecommendations = () =>
   axios.get(`${BASE_URL}/recommend-routine`);
 
+// 추천 루틴 저장
+export const saveRecommendedRoutines = (routineList) =>
+  axios.post(`${BASE_URL}/recommend-routine`, routineList);
+
 // 연·월별 피드백 카드 조회
 export const getFeedbackCards = (year, month) =>
   axios.get(`${BASE_URL}/check-feedback-card`, {

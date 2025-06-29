@@ -9,15 +9,15 @@ export default StyleSheet.create({
   headerText: {
     width: '100%',
     marginTop: height * 0.1,
-    fontSize: width * 0.067,
+    fontSize: width * 0.065,
     fontWeight: '700',
-    color: '#7A73FF',
+    color: '#1A1A1A',
     textAlign: 'center',
     letterSpacing: -0.5,
   },
   whiteContainer: {
     flex: 1,
-    paddingTop: height * 0.03,
+    paddingTop: height * 0.01,
     paddingLeft: 0,
     paddingRight: 0,
   },
@@ -58,7 +58,7 @@ export default StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
     // 선택되지 않은 루틴은 양쪽 여백을 둠
-    marginHorizontal: width * 0.11,
+    marginHorizontal: width * 0.1,
   },
   routineBoxSelected: {
     backgroundColor: '#7A73FF',
@@ -80,7 +80,7 @@ export default StyleSheet.create({
   itemTime: {
     fontSize: width * 0.041,
     fontWeight: '500',
-    color: '#7A73FF',
+    color: '#1A1A1A',
     marginLeft: width * 0.018,
     marginRight: width * 0.04,
     marginBottom: 0,
@@ -91,7 +91,7 @@ export default StyleSheet.create({
   itemTitle: {
     fontSize: width * 0.041,
     fontWeight: '600',
-    color: '#7A73FF',
+    color: '#1A1A1A',
   },
   itemTitleSelected: {
     color: '#FFFFFF',
@@ -105,10 +105,11 @@ export default StyleSheet.create({
     alignItems: 'center',
     shadowColor: '#7A73FF',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    marginRight: width * 0.12, // 루틴 박스와의 간격
+    marginRight: width * 0.1, // 루틴 박스와의 간격
+    marginLeft: -width * 0.02, // 선택된 루틴 박스와 겹치도록 조정
   },
   deleteButtonText: {
     color: '#FFFFFF',
