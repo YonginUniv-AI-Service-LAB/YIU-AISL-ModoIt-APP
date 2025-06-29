@@ -68,7 +68,7 @@ export const fetchRoutinesForEdit = () => {
   return axios.get(`${BASE_URL}/edit-routine`);
 };
 
-// 루틴 삭제 요청 (추후에 연결)
-export const deleteRoutines = (routineIdList) => {
-  return axios.post(`${BASE_URL}/edit-routine`, routineIdList);
+// 루틴 삭제 요청
+export const deleteRoutines = async (routineIds) => {
+  return axios.post(`${BASE_URL}/edit-routine`, routineIds);
 };

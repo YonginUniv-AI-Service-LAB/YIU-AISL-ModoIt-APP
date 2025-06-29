@@ -10,7 +10,7 @@ export default function RoutineSection({ title, data, onToggle, onPressItem }) {
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionHeader}>{title}</Text>
       {data.map((item) => (
-        console.log('🟡 렌더링 중:', item.id, 'checked:', item.checked),
+        // console.log('🟡 렌더링 중:', item.id, 'checked:', item.checked),
         <RoutineItem
           key={item.id}
           item={item}

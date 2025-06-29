@@ -14,13 +14,14 @@ import {
 } from 'react-native-gesture-handler';
 import styles from './RoutineDeletePage.styles';
 import NextButton from '../../components/Button/FinishButton';
-import { fetchRoutinesForEdit } from '../../api/routineApi';
+import { fetchRoutinesForEdit, deleteRoutines } from '../../api/routineApi';
 
 const { width, height } = Dimensions.get('window');
 
 export default function RoutineDeletePage({ navigation, route }) {
   const [items, setItems] = useState([]); // 전체 루틴 목록
   const [selectedItems, setSelectedItems] = useState(new Set()); // 선택된 루틴 ID 집합
+  const [deletedItems, setDeletedItems] = useState(new Set());  // 삭제된 루틴 ID 집합
 
   // ✅ 서버에서 받아온 루틴 데이터를 정규화
   const normalize = (list) =>
@@ -40,6 +41,7 @@ export default function RoutineDeletePage({ navigation, route }) {
         const normalizedItems = normalize(fetched);
         setItems(normalizedItems);
         setSelectedItems(new Set());
+        setDeletedItems(new Set()); // ✅ 초기화
       } catch (err) {
         console.error('❌ 루틴 조회 실패:', err);
       }
@@ -69,13 +71,19 @@ export default function RoutineDeletePage({ navigation, route }) {
       const newSet = new Set(prev);
       if (newSet.has(id)) newSet.delete(id);
       else newSet.add(id);
+      console.log('✅ 선택된 루틴 목록:', Array.from(newSet));
       return newSet;
     });
   };
 
-  // ✅ 루틴 삭제 시 리스트에서 제거
-  const remove = (id) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  // ✅ 삭제할 루틴 ID만 별도로 저장 (UI에서는 제거하지 않음)
+  const removeItem = (id) => {
+    setDeletedItems((prev) => {
+      const newSet = new Set(prev);
+      newSet.add(id);
+      console.log('🗑️ 삭제 예정 루틴:', Array.from(newSet));
+      return newSet;
+    });
     setSelectedItems((prev) => {
       const newSet = new Set(prev);
       newSet.delete(id);
@@ -83,7 +91,29 @@ export default function RoutineDeletePage({ navigation, route }) {
     });
   };
 
-  // 각 루틴 아이템 컴포넌트
+  // ✅ 선택된 루틴 삭제 API 호출
+  const handleDeleteSelected = async () => {
+    console.log('🧪 버튼 눌림');
+
+    if (deletedItems.size === 0) {
+      console.log('⚠️ 삭제할 루틴 없음');
+      navigation.navigate('Main');
+      return;
+    }
+
+    try {
+      const payload = Array.from(deletedItems).map((id) => ({
+        id: parseInt(id, 10),
+      }));
+      console.log('🗑️ 삭제 요청 보낼 데이터:', payload);
+      await deleteRoutines(payload);
+      navigation.navigate('Main');
+    } catch (err) {
+      console.error('❌ 루틴 삭제 실패:', err);
+    }
+  };
+
+  // ✅ 각 루틴 아이템 컴포넌트
   const Item = ({ item }) => {
     const isSelected = selectedItems.has(item.id);
     // Swipeable ref: 문턱 넘었을 때 상태 업데이트용
@@ -97,13 +127,13 @@ export default function RoutineDeletePage({ navigation, route }) {
           <Swipeable
             ref={swipeableRef}
             friction={2}
-            // 왼쪽으로 당겨 문턱(threshold)을 넘어 “열릴 준비” 단계에 진입했을 때
+            // 왼쪽으로 당겨 문턱(threshold)을 넘어 "열릴 준비" 단계에 진입했을 때
             onSwipeableRightWillOpen={() => {
               if (!isSelected) {
                 toggleSelection(item.id);
               }
             }}
-            // 오른쪽으로 당겨 문턱을 넘어 “열릴 준비” 단계에 진입했을 때
+            // 오른쪽으로 당겨 문턱을 넘어 "열릴 준비" 단계에 진입했을 때
             onSwipeableLeftWillOpen={() => {
               if (isSelected) {
                 toggleSelection(item.id);
@@ -152,7 +182,7 @@ export default function RoutineDeletePage({ navigation, route }) {
         {isSelected && (
           <TouchableOpacity
             style={styles.deleteButton}
-            onPress={() => remove(item.id)}
+            onPress={() => removeItem(item.id)} // 수정: UI에서 즉시 제거
             activeOpacity={0.7}
           >
             <Text style={styles.deleteButtonText}>–</Text>
@@ -162,13 +192,16 @@ export default function RoutineDeletePage({ navigation, route }) {
     );
   };
 
+  // ✅ 루틴 섹션 렌더링
   const renderSection = (label, data) =>
     data.length > 0 && (
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>{label}</Text>
         <View style={styles.sectionContainer}>
-          {data.map((it) => (
-            <Item key={it.id} item={it} />
+          {data
+            .filter((it) => !deletedItems.has(it.id)) // ✅ 삭제 예정 루틴은 렌더링 제외
+            .map((it) => (
+              <Item key={it.id} item={it} />
           ))}
         </View>
       </View>
@@ -188,7 +221,7 @@ export default function RoutineDeletePage({ navigation, route }) {
             {renderSection('점심', grouped.lunch)}
             {renderSection('저녁', grouped.evening)}
             <View style={styles.endButtonWrapper}>
-              <NextButton onPress={() => navigation.navigate('MainPage')}>
+              <NextButton onPress={handleDeleteSelected}>
                 <Text style={styles.endButtonText}>완료</Text>
               </NextButton>
             </View>
