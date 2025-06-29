@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import styles from './LevelSelector.styles';
 
@@ -10,16 +10,29 @@ export default function LevelSelector({
   // 5개의 원: 메인(1), 중간(1), 메인(2), 중간(2), 메인(3)
   const circles = [
     { type: 'main', level: 1 },
-    { type: 'between', level: 1 }, // 1-2 사이는 1
+    { type: 'between', level: 1 },
     { type: 'main', level: 2 },
-    { type: 'between', level: 2 }, // 2-3 사이는 2
+    { type: 'between', level: 2 },
     { type: 'main', level: 3 },
   ];
 
-  // 클릭된 원(index)만 하이라이트하기 위한 state
+  // 클릭된 원(index) 관리
   const [selectedIdx, setSelectedIdx] = useState(null);
 
-  // 레벨별 이미지 매핑 (1,2,3 모두 표시)
+  // 외부에서 받은 selectedLevel에 따라 selectedIdx 동기화
+  useEffect(() => {
+    if (selectedLevel != null) {
+      // 메인 원 중에서 level 일치하는 인덱스 찾기
+      const idx = circles.findIndex(
+        (item) => item.type === 'main' && item.level === selectedLevel
+      );
+      setSelectedIdx(idx !== -1 ? idx : null);
+    } else {
+      setSelectedIdx(null);
+    }
+  }, [selectedLevel]);
+
+  // 레벨별 이미지 매핑
   const getEmotionImage = (level, isSelected) => {
     switch (level) {
       case 1:
@@ -47,19 +60,18 @@ export default function LevelSelector({
           {circles.map((item, idx) => {
             const isMain = item.type === 'main';
             const isActive = selectedIdx === idx;
-
             return (
               <TouchableOpacity
                 key={idx}
                 style={[
                   styles.circle,
-                  isActive && styles.activeCircle, // 클릭된 인덱스만 하이라이트
-                  isMain && styles.largeCircle, // 메인(1,2,3) 원만 크게
-                  isMain && styles.circleWithImage, // 메인 원만 이미지 컨테이너
+                  isActive && styles.activeCircle,
+                  isMain && styles.largeCircle,
+                  isMain && styles.circleWithImage,
                 ]}
                 onPress={() => {
                   setSelectedIdx(idx);
-                  onSelect(item.level);
+                  onSelect && onSelect(item.level);
                 }}
               >
                 {isMain && (

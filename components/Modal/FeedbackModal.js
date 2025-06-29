@@ -1,44 +1,63 @@
 // FeedbackModal.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
 import styles from './FeedbackModal.styles';
 import LevelSelector from '../../components/Feedback/LevelSelector';
 import CircularProgressWithIcon from '../../components/Graph/CircularProgressWithIcon';
+import { getFeedbackCards } from '../../api/feedbackApi';
 
 export default function FeedbackModal({
   visible,
   onClose,
-  selectedDate, // 새로 받은 prop
+  selectedDateISO, // YYYY-MM-DD
+  displayDate, // YY.MM.DD
 }) {
   const [emotionLevel, setEmotionLevel] = useState(null);
   const [situationLevel, setSituationLevel] = useState(null);
+  const [progressValue, setProgressValue] = useState(0);
 
-  // 예시: progress 값을 100으로 고정
-  const progressValue = 100;
+  useEffect(() => {
+    if (!visible || !selectedDateISO) return;
+
+    // YYYY, MM 분리
+    const [year, month] = selectedDateISO.split('-');
+    getFeedbackCards(year, month)
+      .then(({ data }) => {
+        const record = data.find((item) => item.date === selectedDateISO);
+        if (record) {
+          setEmotionLevel(record.emotion);
+          setSituationLevel(record.intensity);
+          setProgressValue(Math.round(record.achievementRate));
+        } else {
+          setEmotionLevel(null);
+          setSituationLevel(null);
+          setProgressValue(0);
+        }
+      })
+      .catch((err) => console.error('피드백 기록 조회 실패:', err));
+  }, [visible, selectedDateISO]);
 
   return (
     <Modal
       visible={visible}
-      transparent={true}
+      transparent
       animationType="fade"
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
         <View style={styles.content}>
-          {/* 상단 닫기 버튼 */}
+          {/* 닫기 */}
           <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
             <Text style={styles.closeIconText}>×</Text>
           </TouchableOpacity>
 
-          {/* ─── 날짜 텍스트 (selectedDate prop으로부터) ─── */}
-          <Text style={styles.dateText}>
-            {selectedDate ? selectedDate : ''}
-          </Text>
+          {/* 날짜 */}
+          <Text style={styles.dateText}>{displayDate || ''}</Text>
 
-          {/* 보라색 타이틀 */}
+          {/* 타이틀 */}
           <Text style={styles.title}>이대로만 하면 돼요!</Text>
 
-          {/* ─── 원 + 아이콘 + 퍼센트 ─── */}
+          {/* 달성률 */}
           <View style={styles.progressWrapper}>
             <CircularProgressWithIcon
               progress={progressValue}
@@ -46,25 +65,17 @@ export default function FeedbackModal({
             />
           </View>
 
-          {/* LevelSelector: 감정 선택 */}
-          <View style={styles.selectorWrapper}>
+          {/* 감정 선택 */}
+          <View style={styles.selectorWrapper} pointerEvents="none">
             <View style={{ transform: [{ scale: 0.8 }] }}>
-              <LevelSelector
-                title="감정"
-                selectedLevel={emotionLevel}
-                onSelect={setEmotionLevel}
-              />
+              <LevelSelector title="감정" selectedLevel={emotionLevel} />
             </View>
           </View>
 
-          {/* LevelSelector: 상황 선택 */}
-          <View style={styles.selectorWrapper}>
+          {/* 상황(Intensity) 선택 */}
+          <View style={styles.selectorWrapper} pointerEvents="none">
             <View style={{ transform: [{ scale: 0.8 }] }}>
-              <LevelSelector
-                title="상황"
-                selectedLevel={situationLevel}
-                onSelect={setSituationLevel}
-              />
+              <LevelSelector title="상황" selectedLevel={situationLevel} />
             </View>
           </View>
         </View>

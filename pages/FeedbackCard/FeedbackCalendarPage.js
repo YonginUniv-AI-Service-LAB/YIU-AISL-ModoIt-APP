@@ -1,4 +1,5 @@
 // FeedbackCalendarPage.js
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -13,8 +14,10 @@ import styles from './FeedbackCalendarPage.styles';
 import BottomTabBar from '../../components/common/BottomTabBar';
 import FeedbackModal from '../../components/Modal/FeedbackModal';
 import CircularProgressWithIcon from '../../components/Graph/CircularProgressWithIcon';
+import { getFeedbackCards } from '../../api/feedbackApi';
 
-const { width, height } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
+
 export default function FeedbackCalendarPage({ navigation }) {
   // ─── 1. 오늘(today) 정보 ───
   const today = new Date();
@@ -50,19 +53,45 @@ export default function FeedbackCalendarPage({ navigation }) {
     '12월',
   ];
 
-  // ─── 6. 해당 월 말일 반환 ───
-  const getDaysInMonth = (year, month) => {
-    return new Date(year, month + 1, 0).getDate();
-  };
+  // ─── 6. 이번 달의 피드백 카드 목록 ───
+  const [feedbackCards, setFeedbackCards] = useState([]);
 
-  // ─── 7. 달력 데이터 생성 ───
+  // ─── 7. 프로그레스 상태 ───
+  const [progress, setProgress] = useState(100);
+
+  // ─── 8. currentDate가 바뀔 때마다 서버에서 해당 연·월 데이터 불러오기 ───
+  useEffect(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // JS month 0~11 → 1~12
+    getFeedbackCards(year, month)
+      .then(({ data }) => {
+        setFeedbackCards(data);
+      })
+      .catch((err) => {
+        console.error('피드백 카드 조회 실패:', err);
+      });
+  }, [currentDate]);
+
+  // ─── 9. selectedDay 또는 feedbackCards 변경 시 progress 업데이트 ───
+  useEffect(() => {
+    if (selectedDay == null) return;
+    const y = currentDate.getFullYear();
+    const m = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const d = String(selectedDay).padStart(2, '0');
+    const dateStr = `${y}-${m}-${d}`; // ex) "2025-06-12"
+
+    const record = feedbackCards.find((item) => item.date === dateStr);
+    setProgress(record ? Math.round(record.achievementRate) : 0);
+  }, [selectedDay, feedbackCards]);
+
+  // ─── 캘린더 로직 (생략된 getDaysInMonth 포함) ───
+  const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+
   const generateCalendarArray = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstOfMonth = new Date(year, month, 1);
-    const firstDayIndex = firstOfMonth.getDay(); // 0=일,1=월,…,6=토
-
-    // “월요일부터 시작” 보정
+    const firstDayIndex = firstOfMonth.getDay();
     const blankCount = (firstDayIndex + 6) % 7;
     const prevYear = month === 0 ? year - 1 : year;
     const prevMonth = month === 0 ? 11 : month - 1;
@@ -70,19 +99,19 @@ export default function FeedbackCalendarPage({ navigation }) {
     const thisMonthLastDate = getDaysInMonth(year, month);
 
     const arr = [];
-    // [1] 이전 달 날짜 채우기
+    // 이전 달
     for (let i = 0; i < blankCount; i++) {
       const d = prevMonthLastDate - blankCount + 1 + i;
       arr.push({ day: d, current: false });
     }
-    // [2] 이번 달 날짜 채우기
+    // 이번 달
     for (let d = 1; d <= thisMonthLastDate; d++) {
       arr.push({ day: d, current: true });
     }
     return arr;
   };
 
-  // ─── 8. 이전/다음 달 버튼 ───
+  // ─── 이전/다음 달 버튼 ───
   const onPrevMonth = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -96,12 +125,12 @@ export default function FeedbackCalendarPage({ navigation }) {
     setSelectedDay(null);
   };
 
-  // ─── 9. 날짜 선택 ───
+  // ─── 날짜 선택 ───
   const onSelectDay = (day) => {
     setSelectedDay(day);
   };
 
-  // ─── 10. “오늘이 속한 달인지” 검사 ───
+  // ─── “오늘이 속한 달인지” 검사 ───
   useEffect(() => {
     const viewYear = currentDate.getFullYear();
     const viewMonth = currentDate.getMonth();
@@ -110,42 +139,36 @@ export default function FeedbackCalendarPage({ navigation }) {
     } else {
       setSelectedDay(null);
     }
-  }, [currentDate, todayYear, todayMonth, todayDate]);
+  }, [currentDate]);
 
-  // ─── 11. 달력 배열 생성 & 주 단위 분할 ───
+  // ─── 캘린더 주 단위 분할 ───
   const calendarArray = generateCalendarArray();
   const weeks = [];
   for (let i = 0; i < calendarArray.length; i += 7) {
     weeks.push(calendarArray.slice(i, i + 7));
   }
 
-  // ─── 12. 탭바 클릭 시 네비게이션 ───
+  // ─── 탭바 클릭 시 네비게이션 ───
   const handleTabPress = (tabKey) => {
     if (tabKey === 'feedback') return;
     if (tabKey === 'routine') navigation.navigate('Main');
     else if (tabKey === 'sample') navigation.navigate('SampleRoutine');
   };
 
-  // ─── 13. 퍼센트 상태 (예시로 100%) ───
-  const [progress, setProgress] = useState(100);
-
-  // ─── 14. 선택된 날짜(YYYY-MM-DD)를 “YY.MM.DD” 형식으로 포맷 ───
-  // selectedDay가 null이면 빈 문자열이 출력됩니다.
+  // ─── 선택된 날짜 포맷 (YY.MM.DD) ───
   const formatSelectedDate = () => {
     if (!selectedDay) return '';
-    const y = currentDate.getFullYear() % 100; // ex) 2025 → 25
-    const m = currentDate.getMonth() + 1; // 0~11 → 1~12
-    const d = selectedDay; // 1~31
-    // 두 자리 숫자 맞춤
+    const y = currentDate.getFullYear() % 100;
+    const m = currentDate.getMonth() + 1;
+    const d = selectedDay;
     const yy = String(y).padStart(2, '0');
     const mm = String(m).padStart(2, '0');
     const dd = String(d).padStart(2, '0');
-    return `${yy}.${mm}.${dd}`; // ex) "25.06.07"
+    return `${yy}.${mm}.${dd}`;
   };
 
   return (
     <View style={styles.container}>
-      {/* ───── ScrollView로 감싸기 ───── */}
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
@@ -154,7 +177,7 @@ export default function FeedbackCalendarPage({ navigation }) {
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* ───── Header (◀ 6월 ▶) ───── */}
+        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onPrevMonth}>
             <Text style={styles.navArrowText}>{'< '}</Text>
@@ -167,7 +190,7 @@ export default function FeedbackCalendarPage({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* ───── 요일 레이블 ───── */}
+        {/* 요일 레이블 */}
         <View style={styles.weekdayContainer}>
           {['월', '화', '수', '목', '금', '토', '일'].map((wd) => (
             <Text key={wd} style={styles.weekdayText}>
@@ -176,7 +199,7 @@ export default function FeedbackCalendarPage({ navigation }) {
           ))}
         </View>
 
-        {/* ───── 날짜 그리드 ───── */}
+        {/* 날짜 그리드 */}
         <View style={styles.calendarContainer}>
           {weeks.map((week, wIdx) => (
             <View key={wIdx} style={styles.weekRow}>
@@ -212,35 +235,39 @@ export default function FeedbackCalendarPage({ navigation }) {
           ))}
         </View>
 
-        {/* ───── Feedback 카드 ───── */}
+        {/* Feedback 카드 */}
         <View style={styles.feedbackCard}>
-          {/* 피드백 타이틀 (가운데 정렬) + '>' 버튼 */}
           <View style={styles.titleRow}>
             <Text style={styles.feedbackTitle}>이대로만 하면 돼요!</Text>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
               <Text style={styles.arrowIcon}>{'>'}</Text>
             </TouchableOpacity>
           </View>
-
-          {/* CircularProgressWithIcon 컴포넌트 */}
           <View style={styles.centered}>
             <CircularProgressWithIcon
               progress={progress}
-              // 실제 아이콘 경로를 프로젝트 구조에 맞게 수정하세요.
               iconSource={require('../../assets/images/emotion_happy.png')}
             />
           </View>
         </View>
       </ScrollView>
 
-      {/* ───── Feedback Modal ───── */}
+      {/* Feedback Modal */}
       <FeedbackModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        selectedDate={formatSelectedDate()}
+        // 실제 API 조회에 사용할 ISO 형식 날짜
+        selectedDateISO={
+          selectedDay
+            ? `${currentDate.getFullYear()}-${String(
+                currentDate.getMonth() + 1
+              ).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
+            : null
+        }
+        // 화면에 보여줄 YY.MM.DD 형식
+        displayDate={formatSelectedDate()}
       />
-
-      {/* ───── 하단 탭바 ───── */}
+      {/* 하단 탭바 */}
       <BottomTabBar currentTab={currentTab} onTabPress={handleTabPress} />
     </View>
   );
