@@ -64,7 +64,6 @@ export default function SignUpPage({ navigation}) {
     try {
       await signup({ name, email, password });
       alert('회원가입이 완료되었습니다!');
-      // TODO: 로그인 페이지로 이동하거나 메인 페이지로 이동
       navigation.navigate('Login');
     } catch (error) {
       console.error(error);

@@ -7,8 +7,9 @@ export default StyleSheet.create({
   },
   sectionHeader: {
     fontSize: 20,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#1A1A1A',
-    marginBottom: 12,
+    marginBottom: 10,
+    paddingLeft: 15,
   },
 });
