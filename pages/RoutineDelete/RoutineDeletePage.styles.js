@@ -81,7 +81,7 @@ export default StyleSheet.create({
     fontSize: width * 0.041,
     fontWeight: '500',
     color: '#1A1A1A',
-    marginLeft: width * 0.018,
+    marginLeft: width * 0.01,
     marginRight: width * 0.04,
     marginBottom: 0,
   },
@@ -92,6 +92,7 @@ export default StyleSheet.create({
     fontSize: width * 0.041,
     fontWeight: '600',
     color: '#1A1A1A',
+    maxWidth: width * 0.57,
   },
   itemTitleSelected: {
     color: '#FFFFFF',

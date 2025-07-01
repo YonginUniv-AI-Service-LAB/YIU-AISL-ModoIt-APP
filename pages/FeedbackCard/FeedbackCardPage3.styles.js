@@ -29,14 +29,13 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: 'center', // 컨테이너 수평 중앙 정렬
   },
-
   optionsWrapper: {
     width: '100%',
     marginTop: height * 0.004, // 4 / 844 ≈ 0.004
     alignItems: 'center',
   },
   optionButton: {
-    width: width * 0.77,
+    width: width * 0.8,
     height: height * 0.06, // 49 / 844 ≈ 0.058
     borderRadius: 100,
     borderWidth: 1,
@@ -54,18 +53,10 @@ export default StyleSheet.create({
     fontSize: width * 0.043, // 17 / 390 ≈ 0.043
     fontWeight: '500',
     color: '#ABABAB',
+    maxWidth: width * 0.63,
+    textAlign: 'center',
   },
   selectedText: {
     color: '#7A73FF',
   },
-
-  // endButtonWrapper: {
-  //   marginTop: height * 0.043, // NextButton 위치 상향
-  //   alignItems: 'center',
-  // },
-  // endButtonText: {
-  //   color: '#FFFFFF',
-  //   fontSize: width * 0.041, // 16 / 390 ≈ 0.041
-  //   fontWeight: '600',
-  // },
 });
