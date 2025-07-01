@@ -6,6 +6,7 @@ import {
   Dimensions,
   ActivityIndicator,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import styles from './FeedbackCardPage3.styles';
 import WhiteRoundedContainer from '../../components/common/WhiteRoundedContainer';
@@ -16,29 +17,28 @@ import sectionStyles from '../../components/Routine/RoutineSection.styles';
 import {
   getFeedbackAchievementRate,
   getRecommendations,
-  // submitRecommendations, // 나중에 저장용 POST가 필요하면 이걸 사용
+  saveRecommendedRoutines,
 } from '../../api/feedbackApi';
 
 const { width, height } = Dimensions.get('window');
 
 export default function FeedbackCardPage3({ navigation, route }) {
-  const { unchecked, checked /*, emotion, intensity */ } = route.params;
+  const { unchecked, checked } = route.params;
   const [achievementRate, setAchievementRate] = useState(0);
 
-  // 추천 루틴 목록: { id: number, content: string } 배열
-  const [options, setOptions] = useState([]);
-  const [selected, setSelected] = useState([]); // 선택된 id 배열
+  const [options, setOptions] = useState([]); // 추천 목록
+  const [selected, setSelected] = useState([]); // 선택한 id 배열
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // 1) 성취율 조회
+  // 성취율 조회
   useEffect(() => {
     getFeedbackAchievementRate()
       .then((res) => setAchievementRate(res.data.achievementRate))
       .catch((err) => console.error('피드백카드 호출 실패', err));
   }, []);
 
-  // 2) 오늘 상태 기반 추천 루틴 조회 (4개 무작위)
+  // 추천 루틴 조회
   useEffect(() => {
     const fetchOptions = async () => {
       setLoading(true);
@@ -54,30 +54,43 @@ export default function FeedbackCardPage3({ navigation, route }) {
     fetchOptions();
   }, []);
 
-  // 3) 여러 개 선택 토글 (id 기준)
+  // 선택 토글
   const toggleOption = (id) => {
-    if (selected.includes(id)) {
-      setSelected(selected.filter((o) => o !== id));
-    } else {
-      setSelected([...selected, id]);
-    }
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((o) => o !== id) : [...prev, id]
+    );
   };
 
-  // 4) 다음 버튼 핸들러 (선택된 id 전달)
-  const handleNext = () => {
-    if (selected.length === 0) return;
-    // -- 저장 POST가 필요하면 여기서 submitRecommendations 호출 --
-    navigation.navigate('RoutineDelete', { unchecked, checked, selected });
+  // “다음” → 선택 항목 저장 & 다음 화면
+  const handleNext = async () => {
+    setSubmitting(true);
+    try {
+      // 선택한 루틴이 있을 때만 저장 호출
+      if (selected.length) {
+        await saveRecommendedRoutines(selected.map((id) => ({ id })));
+      }
+      navigation.navigate('RoutineDelete', { unchecked, checked, selected });
+    } catch (error) {
+      console.error('추천 루틴 저장 실패:', error);
+      Alert.alert(
+        '저장 실패',
+        '루틴을 저장하지 못했습니다. 잠시 후 다시 시도해주세요.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.purpleHeader} />
       <Text style={styles.headerText}>오늘 너무 잘했어요!</Text>
+
       <WhiteRoundedContainer>
         <View style={localStyles.progressWrapper}>
           <ProgressCircle value={achievementRate} />
         </View>
+
         <Text style={sectionStyles.sectionHeader}>다른 루틴 추천</Text>
 
         {loading ? (
@@ -111,10 +124,7 @@ export default function FeedbackCardPage3({ navigation, route }) {
         )}
       </WhiteRoundedContainer>
 
-      <NextButton
-        onPress={handleNext}
-        disabled={selected.length === 0 || loading || submitting}
-      >
+      <NextButton onPress={handleNext} disabled={loading || submitting}>
         {submitting ? (
           <ActivityIndicator color="#FFFFFF" />
         ) : (
