@@ -180,6 +180,8 @@ export default function MainPage({ navigation }) {
 
   // ✅ 루틴 상세 조회 후 편집 모달 오픈
   const onPressRoutine = async (item) => {
+    //체크된 루틴은 수정 모달을 열지 않음
+    if (item.checked) return;
     try {
       const res = await getRoutineDetail(item.id);
       const rawTime = res.data.timeSlot ?? res.data.time_slot;
