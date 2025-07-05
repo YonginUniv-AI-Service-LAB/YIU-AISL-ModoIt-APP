@@ -5,8 +5,8 @@ const BASE_URL = Constants.expoConfig.extra.BASE_URL;
 axios.defaults.withCredentials = true;
 
 // 오늘 성취율 조회
-export const getFeedbackAchievementRate = () => {
-  return axios.get(`${BASE_URL}/feedback-card`);
+export const getFeedbackAchievementRate = (date) => {
+  return axios.get(`${BASE_URL}/feedback-card`, { params: { date } });
 };
 
 // 감정 & 강도 저장
