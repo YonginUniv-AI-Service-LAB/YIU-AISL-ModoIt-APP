@@ -8,81 +8,88 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+// ✅ 스타일과 공통 컴포넌트
 import styles from './SampleRoutinePage.styles';
 import RoutinePreviewCard from '../../components/Card/RoutinePreviewCard';
 import AddButton from '../../components/Button/AddButton';
 import BottomTabBar from '../../components/common/BottomTabBar';
 
+// ✅ 추천 루틴 API
+import {
+  fetchEmotionSample,
+  fetchDifficultySample,
+} from '../../api/recommendationApi';
+
 const { width } = Dimensions.get('window');
 
-// TODO: 태그 목록도 API에서 가져오는 경우에는 API 연결 시 수정 필요
-const TAGS = ['우울', '불안', '무기력', '초조함', '짜증'];
+// ✅ 상단에 보여질 태그 목록
+const TAGS = ['행복', '무난', '우울', '쉬움', '보통', '어려움'];
+
+// ✅ 태그 종류 구분 (emotion 또는 difficulty)
+const TAG_TYPE_MAP = {
+  행복: 'emotion',
+  무난: 'emotion',
+  우울: 'emotion',
+  쉬움: 'difficulty',
+  보통: 'difficulty',
+  어려움: 'difficulty',
+};
+
+// ✅ 감정 태그에 대응하는 코드 (emotionSamples의 키 값)
+const EMOTION_CODE_MAP = {
+  행복: '1',
+  무난: '2',
+  우울: '3',
+};
+
+// ✅ 강도 태그에 대응하는 코드 (difficultySamples의 키 값)
+const DIFFICULTY_CODE_MAP = {
+  쉬움: '1',
+  보통: '2',
+  어려움: '3',
+};
 
 export default function SampleRoutinePage({ navigation }) {
   const [selectedTag, setSelectedTag] = useState(TAGS[0]); // 첫 번째 태그 기본 선택
+  const [routines, setRoutines] = useState([]); // 추천 루틴 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
 
-  // 루틴 카드에 들어갈 임시 루틴 목록
-  // TODO: API 연결 시 수정 필요 - 더미 데이터 제거하고 실제 API 호출로 대체
-  const dummyRoutines = [
-    '이불 정리하기',
-    '스트레칭',
-    '산책하기',
-    '양치하기',
-    '마음 다잡기',
-  ];
-
-  // 임시로 로딩 시뮬레이션 (API 연결 전까지 사용)
+  // ✅ 선택된 태그가 바뀔 때마다 추천 루틴 가져오기
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000); // 1초 후 로딩 완료
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // 태그 변경 시 로딩 시뮬레이션
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500); // 0.5초 후 로딩 완료
-
-    return () => clearTimeout(timer);
+    fetchRoutinesByTag(selectedTag);
   }, [selectedTag]);
 
-  // TODO: API 연결 시 수정 필요 - 선택된 태그에 따른 루틴 데이터 API 호출
-  // useEffect(() => {
-  //   fetchRoutinesByTag(selectedTag);
-  // }, [selectedTag]);
+  // ✅ 선택된 태그(emotion/difficulty)에 맞는 추천 루틴 API 호출
+  const fetchRoutinesByTag = async (tag) => {
+    try {
+      setLoading(true);
 
-  // TODO: API 연결 시 수정 필요 - state 추가
-  // const [routines, setRoutines] = useState([]);
-  // const [loading, setLoading] = useState(false);
+      const type = TAG_TYPE_MAP[tag];
+      const key =
+        type === 'emotion' ? EMOTION_CODE_MAP[tag] : DIFFICULTY_CODE_MAP[tag];
 
-  // TODO: API 연결 시 수정 필요 - API 호출 함수 구현
-  // const fetchRoutinesByTag = async (tag) => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await fetch(`/api/routines?tag=${tag}`);
-  //     const data = await response.json();
-  //     setRoutines(data.routines || []);
-  //   } catch (error) {
-  //     console.error('루틴 데이터 로딩 실패:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // TODO: API 연결 시 수정 필요 - routines state 사용으로 변경
-  // const routineData = {
-  //   title: selectedTag + ' 개선 루틴',
-  //   routines: routines,
-  // };
+      let response;
+      if (type === 'emotion') {
+        response = await fetchEmotionSample(key);
+      } else {
+        response = await fetchDifficultySample(key);
+      }
 
-  // RoutinePreviewCard용 데이터(API 연결 전까지 사용)
+      if (response?.data) {
+        setRoutines(response.data);
+      }
+    } catch (error) {
+      console.error('❌ 샘플 루틴 불러오기 실패:', error);
+      setRoutines([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ 카드 컴포넌트에 넘길 데이터 구조
   const routineData = {
-    title: selectedTag + ' 개선 루틴',
-    routines: dummyRoutines,
+    title: selectedTag + ' 추천 루틴',
+    routines: routines, // 전체 객체 통째로 넘기기 (id + content)
   };
 
   return (
@@ -90,7 +97,7 @@ export default function SampleRoutinePage({ navigation }) {
       {/* 제목 */}
       <Text style={styles.titleText}>루틴 태그</Text>
 
-      {/* 태그 리스트 */}
+      {/* 태그 선택 버튼 리스트 */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

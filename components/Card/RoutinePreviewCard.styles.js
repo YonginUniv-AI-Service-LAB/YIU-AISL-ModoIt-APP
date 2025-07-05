@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
     textAlign: 'center',
     letterSpacing: -0.1,
+    paddingHorizontal: scale(16),
   },
 });
 

@@ -31,3 +31,19 @@ export const saveRecommendedRoutines = async (routinePresetList) => {
     withCredentials: true, // 세션 쿠키 포함
   });
 };
+
+// 감정 기반 샘플 루틴 조회
+export const fetchEmotionSample = async (value) => {
+  return axios.get(`${BASE_URL}/sample-routine/emotion`, {
+    params: { value },
+    withCredentials: true,
+  });
+};
+
+// 강도 기반 샘플 루틴 조회
+export const fetchDifficultySample = async (value) => {
+  return axios.get(`${BASE_URL}/sample-routine/difficulty`, {
+    params: { value },
+    withCredentials: true,
+  });
+};
