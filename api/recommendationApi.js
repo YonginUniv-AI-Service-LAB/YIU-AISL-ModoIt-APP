@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
+
 const BASE_URL = Constants.expoConfig.extra.BASE_URL;
 axios.defaults.withCredentials = true;
 
@@ -44,6 +45,20 @@ export const fetchEmotionSample = async (value) => {
 export const fetchDifficultySample = async (value) => {
   return axios.get(`${BASE_URL}/sample-routine/difficulty`, {
     params: { value },
+    withCredentials: true,
+  });
+};
+
+// 샘플 루틴 저장 API (POST /sample-routine)
+export const saveSampleRoutines = async (routinePresetList) => {
+  const url = `${BASE_URL}/sample-routine`;
+  console.log('📡 POST 요청 주소:', url);
+  console.log('📦 POST 데이터:', routinePresetList);
+
+  return axios.post(url, routinePresetList, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
     withCredentials: true,
   });
 };

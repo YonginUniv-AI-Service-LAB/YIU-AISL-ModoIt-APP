@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 // ✅ 스타일과 공통 컴포넌트
@@ -18,6 +19,7 @@ import BottomTabBar from '../../components/common/BottomTabBar';
 import {
   fetchEmotionSample,
   fetchDifficultySample,
+  saveSampleRoutines,
 } from '../../api/recommendationApi';
 
 const { width } = Dimensions.get('window');
@@ -140,9 +142,17 @@ export default function SampleRoutinePage({ navigation }) {
 
       {/* 추가하기 버튼 */}
       <AddButton
-        onPress={() => {
-          console.log('추가하기 버튼 눌림');
-          // TODO: API 연결 시 수정 필요 - 실제 루틴 추가 API 호출
+        onPress={async () => {
+          try {
+            const presetIdList = routines.map((r) => ({ id: r.id }));
+            await saveSampleRoutines(presetIdList);
+
+            Alert.alert('루틴이 추가되었습니다!');
+            navigation.navigate('Main');
+          } catch (error) {
+            console.error('❌ 루틴 저장 실패:', error);
+            Alert.alert('저장 실패', '루틴을 추가하는 데 실패했습니다.');
+          }
         }}
       />
 
