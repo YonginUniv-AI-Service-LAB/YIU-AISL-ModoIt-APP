@@ -67,7 +67,7 @@ export default function MainPage({ navigation }) {
 
         // 4) 추천 받은 프리셋(route.params) 매핑
         const recommended = (route.params?.routines || []).map((item, idx) => {
-          const rawTime = item.timeSlot ?? item.time_slot;
+          const rawTime = item.timeSlot ?? item.time_slot ?? item.time;
           const time =
             typeof rawTime === 'string' && rawTime.length >= 5
               ? rawTime.substring(0, 5)
