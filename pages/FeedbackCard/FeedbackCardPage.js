@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native';
+import { format } from 'date-fns';
 import styles from './FeedbackCardPage.styles';
 import WhiteRoundedContainer from '../../components/common/WhiteRoundedContainer';
 import NextButton from '../../components/Button/NextButton';
@@ -22,12 +23,16 @@ export default function FeedbackCardPage({ navigation, route }) {
 
   // 최초 렌더링 시 서버에서 성취율 호출
   useEffect(() => {
-    getFeedbackAchievementRate()
+    const today = format(new Date(), 'yyyy-MM-dd');
+    console.log('📅 오늘 날짜:', today); // 확인용
+    getFeedbackAchievementRate(today)
       .then((res) => {
+        console.log('✅ 서버 응답:', res.data); // 응답 구조 확인
         setAchievementRate(res.data.achievementRate);
       })
       .catch((err) => {
         console.error('피드백카드 호출 실패', err);
+        Alert.alert('오류', '오늘의 루틴 달성률을 불러오지 못했습니다.');
       });
   }, []);
 

@@ -8,11 +8,15 @@ axios.defaults.withCredentials = true;
 // - 백엔드에서 @RequestParam LocalDate date 를 필수로 받기 때문에
 //   날짜 파라미터를 'yyyy-MM-dd' 형식으로 명시적으로 전달해야 함
 // - 그렇지 않으면 500 에러 발생함 (date가 null인 상태로 서비스 로직 진입)
-export const getFeedbackAchievementRate = () => {
-  const today = new Date().toISOString().split('T')[0]; // 'yyyy-MM-dd' 형식
-  return axios.get(`${BASE_URL}/feedback-card`, {
-    params: { date: today },
-  });
+// export const getFeedbackAchievementRate = () => {
+//   const today = new Date().toISOString().split('T')[0]; // 'yyyy-MM-dd' 형식
+//   return axios.get(`${BASE_URL}/feedback-card`, {
+//     params: { date: today },
+//   });
+
+// 오늘 성취율 조회
+export const getFeedbackAchievementRate = (date) => {
+  return axios.get(`${BASE_URL}/feedback-card`, { params: { date } });
 };
 
 // 감정 & 강도 저장

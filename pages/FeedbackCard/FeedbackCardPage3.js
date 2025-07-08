@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { format } from 'date-fns';
 import styles from './FeedbackCardPage3.styles';
 import WhiteRoundedContainer from '../../components/common/WhiteRoundedContainer';
 import NextButton from '../../components/Button/NextButton';
@@ -33,7 +34,8 @@ export default function FeedbackCardPage3({ navigation, route }) {
 
   // 성취율 조회
   useEffect(() => {
-    getFeedbackAchievementRate()
+    const today = format(new Date(), 'yyyy-MM-dd');
+    getFeedbackAchievementRate(today)
       .then((res) => setAchievementRate(res.data.achievementRate))
       .catch((err) => console.error('피드백카드 호출 실패', err));
   }, []);
