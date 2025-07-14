@@ -82,11 +82,18 @@ export default function FeedbackCardPage3({ navigation, route }) {
       setSubmitting(false);
     }
   };
+  // 상단 텍스트 동적 설정 (달성률에 따라 메시지 변경)
+  const headerText =
+    achievementRate <= 33
+      ? '좀 더 노력하세요!'
+      : achievementRate <= 66
+      ? '지금도 괜찮아요!'
+      : '오늘 너무 잘했어요!';
 
   return (
     <View style={styles.container}>
       <View style={styles.purpleHeader} />
-      <Text style={styles.headerText}>오늘 너무 잘했어요!</Text>
+      <Text style={styles.headerText}>{headerText}</Text>
 
       <WhiteRoundedContainer>
         <View style={localStyles.progressWrapper}>

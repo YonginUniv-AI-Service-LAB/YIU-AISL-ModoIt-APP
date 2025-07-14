@@ -167,6 +167,14 @@ export default function FeedbackCalendarPage({ navigation }) {
     return `${yy}.${mm}.${dd}`;
   };
 
+  // ─── 상단 텍스트 동적 설정 (progress에 따라 메시지 변경) ───
+  const feedbackTitle =
+    progress <= 33
+      ? '좀 더 노력하세요!'
+      : progress <= 66
+      ? '지금도 괜찮아요!'
+      : '이대로만 하면 돼요!';
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -238,7 +246,7 @@ export default function FeedbackCalendarPage({ navigation }) {
         {/* Feedback 카드 */}
         <View style={styles.feedbackCard}>
           <View style={styles.titleRow}>
-            <Text style={styles.feedbackTitle}>이대로만 하면 돼요!</Text>
+            <Text style={styles.feedbackTitle}>{feedbackTitle}</Text>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
               <Text style={styles.arrowIcon}>{'>'}</Text>
             </TouchableOpacity>

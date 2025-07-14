@@ -39,12 +39,20 @@ export default function FeedbackCardPage2({ navigation, route }) {
       .catch((err) => console.error('미완료 루틴 조회 실패', err));
   }, []);
 
+  // 상단 텍스트 동적 설정 (달성률에 따라 메시지 변경)
+  const headerText =
+    achievementRate <= 33
+      ? '좀 더 노력하세요!'
+      : achievementRate <= 66
+      ? '지금도 괜찮아요!'
+      : '오늘 너무 잘했어요!';
+
   return (
     <View style={styles.container}>
       {/* 상단 연보라색 배경 */}
       <View style={styles.purpleHeader} />
       {/* 상단 텍스트 */}
-      <Text style={styles.headerText}>오늘 너무 잘했어요!</Text>
+      <Text style={styles.headerText}>{headerText}</Text>
 
       {/* 아래 카드 영역 */}
       <WhiteRoundedContainer style={styles.whiteContainer}>

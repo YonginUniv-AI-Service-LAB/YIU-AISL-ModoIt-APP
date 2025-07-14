@@ -37,6 +37,14 @@ export default function FeedbackModal({
       .catch((err) => console.error('피드백 기록 조회 실패:', err));
   }, [visible, selectedDateISO]);
 
+  // 타이틀 동적 설정(달성률에 따라)
+  const Title =
+    progressValue <= 33
+      ? '좀 더 노력하세요!'
+      : progressValue <= 66
+      ? '지금도 괜찮아요!'
+      : '이대로만 하면 돼요!';
+
   return (
     <Modal
       visible={visible}
@@ -55,7 +63,7 @@ export default function FeedbackModal({
           <Text style={styles.dateText}>{displayDate || ''}</Text>
 
           {/* 타이틀 */}
-          <Text style={styles.title}>이대로만 하면 돼요!</Text>
+          <Text style={styles.title}>{Title}</Text>
 
           {/* 달성률 */}
           <View style={styles.progressWrapper}>
