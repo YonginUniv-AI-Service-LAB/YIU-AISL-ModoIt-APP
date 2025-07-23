@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -9,7 +9,7 @@ const circleSize = width * 0.07; // 화면 너비의 7%
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: width * 0.005, // 좌우 여백
-    paddingTop: height * 0.082, // 상단 여백,
+    paddingTop: Platform.OS === 'android' ? height * 0.055 : height * 0.082, // 상단 여백,
     paddingBottom: height * 0.05, // 하단 여백
     backgroundColor: '#7A73FF', // 배경색 (피그마 기준)
   },
@@ -18,10 +18,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
     marginBottom: height * 0.028,
-    marginLeft: width * 0.05,  // 왼쪽 정렬 (피그마 기준)
-    },
+    marginLeft: width * 0.05, // 왼쪽 정렬 (피그마 기준)
+  },
   row: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     justifyContent: 'space-between', // 가로 정렬
   },
   dayText: {
