@@ -66,7 +66,7 @@ export default function FeedbackCardPage({ navigation, route }) {
       {/* 아래 카드 영역 */}
       <WhiteRoundedContainer>
         {/* 퍼센트 그래프 추가 */}
-        <View style={{ marginTop: -110, marginBottom: 15 }}>
+        <View style={styles.progressWrapper}>
           <ProgressCircle value={achievementRate} />
         </View>
         {/* 카드 안 내용 */}

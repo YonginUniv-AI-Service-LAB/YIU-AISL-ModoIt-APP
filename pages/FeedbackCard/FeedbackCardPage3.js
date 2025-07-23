@@ -96,7 +96,7 @@ export default function FeedbackCardPage3({ navigation, route }) {
       <Text style={styles.headerText}>{headerText}</Text>
 
       <WhiteRoundedContainer>
-        <View style={localStyles.progressWrapper}>
+        <View style={styles.progressWrapper}>
           <ProgressCircle value={achievementRate} />
         </View>
 

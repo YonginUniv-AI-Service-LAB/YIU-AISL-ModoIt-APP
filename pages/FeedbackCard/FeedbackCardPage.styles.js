@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   headerText: {
     position: 'absolute',
     width: '100%',
-    top: height * 0.09, // 75 / 844 ≈ 0.089
+    top: Platform.OS === 'android' ? height * 0.075 : height * 0.09,
     fontSize: width * 0.067, // 26 / 390 ≈ 0.067
     fontWeight: '700',
     color: '#7A73FF',
@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: -0.5,
     marginBottom: width * 0.04, // 20 / 390 ≈ 0.051
+  },
+  progressWrapper: {
+    marginTop: Platform.OS === 'android' ? -height * 0.14 : -height * 0.125,
+    marginBottom: height * 0.014, // 약 15px
   },
 });
 

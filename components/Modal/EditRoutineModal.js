@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+} from 'react-native';
 import styles from './AddRoutineModal.styles';
 
 export default function EditRoutineModal({
@@ -105,13 +112,18 @@ export default function EditRoutineModal({
             <Text style={styles.modalLabel}>루틴</Text>
             <TextInput
               style={styles.modalInput}
+              multiline={true}
+              numberOfLines={2}
               placeholder="루틴 입력"
               value={title}
               onChangeText={setTitle}
             />
 
             {/* Save Button */}
-            <TouchableOpacity style={styles.modalAddButton} onPress={handleSave}>
+            <TouchableOpacity
+              style={styles.modalAddButton}
+              onPress={handleSave}
+            >
               <Text style={styles.modalAddButtonText}>수정하기</Text>
             </TouchableOpacity>
           </ScrollView>

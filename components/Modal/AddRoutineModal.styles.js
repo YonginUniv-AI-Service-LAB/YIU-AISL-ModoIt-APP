@@ -1,13 +1,13 @@
 // AddRoutineModal.styles.js
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-const inputHeight = height * 0.06;
+const inputHeight = height * 0.09;
 const fontSize = width * 0.05;
 const labelFontSize = width * 0.042;
 const buttonHeight = height * 0.06;
-const sidePadding = width * 0.08;
+const sidePadding = width * 0.075;
 const modalRadius = width * 0.06;
 const boxRadius = width * 0.04;
 const colonFontSize = width * 0.085;
@@ -129,11 +129,23 @@ const styles = StyleSheet.create({
     borderColor: '#7A73FF',
     backgroundColor: '#FFFFFF',
     borderRadius: boxRadius,
-    paddingHorizontal: sidePadding,
     marginBottom: height * 0.04,
     fontSize: width * 0.04,
     textAlign: 'center',
     color: '#1A1A1A',
+    ...Platform.select({
+      ios: {
+        // iOS에서는 패딩 제거 후 화면 전체 너비에서 중앙 정렬
+        alignSelf: 'stretch',
+        paddingHorizontal: width * 0.08,
+        paddingVertical: height * 0.02,
+      },
+      android: {
+        // Android는 기존 패딩 유지 + 수직 중앙 정렬
+        paddingHorizontal: sidePadding,
+        textAlignVertical: 'center',
+      },
+    }),
   },
   modalAddButton: {
     width: '90%',

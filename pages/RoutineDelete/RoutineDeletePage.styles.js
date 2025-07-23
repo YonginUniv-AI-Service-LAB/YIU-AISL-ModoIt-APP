@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
@@ -8,7 +8,7 @@ export default StyleSheet.create({
   },
   headerText: {
     width: '100%',
-    marginTop: height * 0.1,
+    marginTop: Platform.OS === 'android' ? height * 0.07 : height * 0.1,
     fontSize: width * 0.065,
     fontWeight: '700',
     color: '#1A1A1A',

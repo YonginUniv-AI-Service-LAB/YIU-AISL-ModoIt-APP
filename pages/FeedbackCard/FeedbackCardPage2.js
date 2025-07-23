@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  Platform,
+} from 'react-native';
 import { format } from 'date-fns';
 import styles from './FeedbackCardPage2.styles';
 import WhiteRoundedContainer from '../../components/common/WhiteRoundedContainer';
@@ -57,7 +64,7 @@ export default function FeedbackCardPage2({ navigation, route }) {
       {/* 아래 카드 영역 */}
       <WhiteRoundedContainer style={styles.whiteContainer}>
         {/* 퍼센트 그래프 추가 */}
-        <View style={localStyles.progressWrapper}>
+        <View style={styles.progressWrapper}>
           <ProgressCircle value={achievementRate} />
         </View>
 
@@ -66,7 +73,9 @@ export default function FeedbackCardPage2({ navigation, route }) {
 
         {/* 스크롤뷰로 전체 내용을 감싸고, 체크 되지 않은 루틴, NextButton도 포함 */}
         <ScrollView
-          style={{ maxHeight: height * 0.37 }}
+          style={{
+            maxHeight: Platform.OS === 'android' ? height * 0.4 : height * 0.37,
+          }}
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           {/* ↓↓ 수정된 부분: 섹션 헤더와 아이템 렌더링 */}

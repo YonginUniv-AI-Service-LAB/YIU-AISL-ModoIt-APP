@@ -74,6 +74,8 @@ export default function AddRoutineModal({
           <Text style={styles.modalLabel}>루틴</Text>
           <TextInput
             style={styles.modalInput}
+            multiline={true}
+            numberOfLines={2}
             placeholder="루틴 입력"
             value={routine}
             onChangeText={setRoutine}

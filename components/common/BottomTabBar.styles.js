@@ -1,16 +1,16 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
 // 하단 고정 푸터 탭 스타일 정의
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',  // 화면 하단 고정
+    position: 'absolute', // 화면 하단 고정
     bottom: 0,
     width: width,
-    height: 105,
+    height: Platform.OS === 'android' ? 75 : 105,
     backgroundColor: '#FFFFFF',
-    flexDirection: 'row',  // 가로 정렬
+    flexDirection: 'row', // 가로 정렬
     justifyContent: 'space-around',
     alignItems: 'center',
     shadowColor: '#000',
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 3,
-    paddingBottom: 20,
+    paddingBottom: Platform.OS === 'android' ? 7 : 20,
   },
   tabItem: {
     alignItems: 'center',
