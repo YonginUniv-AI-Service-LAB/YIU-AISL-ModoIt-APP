@@ -21,15 +21,19 @@ export default StyleSheet.create({
     marginTop: height * 0.03,
     marginLeft: width * 0.03,
   },
-  navArrowText: {
-    fontSize: width * 0.06,
-    color: '#000000',
-    paddingHorizontal: width * 0.05,
+  arrow: {
+    width: 10,  // 원본 비율에 맞게 조정
+    height: 20,
+    resizeMode: 'contain', // 이미지 왜곡 방지
+    marginHorizontal: 15,   // 좌우 여백
   },
   monthText: {
-    fontSize: width * 0.045,
+    fontSize: width * 0.05,
+    lineHeight: width * 0.07,
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#1A1A1A',
+    includeFontPadding: false, // ✅ Android에서 위쪽 여백 제거
+    textAlignVertical: 'center', // ✅ Android 전용 수직 중앙 정렬
   },
   weekdayContainer: {
     flexDirection: 'row',
@@ -103,10 +107,10 @@ export default StyleSheet.create({
     width: '100%',
   },
   arrowIcon: {
-    fontSize: width * 0.07,
-    color: '#7A73FF',
+    width: 10,  // 원본 비율에 맞게 조정
+    height: 20,
     position: 'absolute',
     right: -(width * 0.35), // 카드 우측 패딩만큼 떨어뜨려서 표시
-    top: -32,
+    top: -20,
   },
 });

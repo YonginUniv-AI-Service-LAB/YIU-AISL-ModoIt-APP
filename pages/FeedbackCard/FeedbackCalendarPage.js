@@ -188,13 +188,19 @@ export default function FeedbackCalendarPage({ navigation }) {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onPrevMonth}>
-            <Text style={styles.navArrowText}>{'< '}</Text>
+            <Image
+              source={require('../../assets/images/arrow1.png')} // 왼쪽 화살표 이미지
+              style={styles.arrow}
+            />
           </TouchableOpacity>
           <Text style={styles.monthText}>
             {monthNames[currentDate.getMonth()]}
           </Text>
           <TouchableOpacity onPress={onNextMonth}>
-            <Text style={styles.navArrowText}>{' >'}</Text>
+            <Image
+              source={require('../../assets/images/arrow2.png')} // 오른쪽 화살표 이미지
+              style={styles.arrow}
+            />
           </TouchableOpacity>
         </View>
 
@@ -248,7 +254,10 @@ export default function FeedbackCalendarPage({ navigation }) {
           <View style={styles.titleRow}>
             <Text style={styles.feedbackTitle}>{feedbackTitle}</Text>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Text style={styles.arrowIcon}>{'>'}</Text>
+              <Image
+                source={require('../../assets/images/arrow3.png')} // 오른쪽 화살표 이미지
+                style={styles.arrowIcon}
+              />
             </TouchableOpacity>
           </View>
           <View style={styles.centered}>
