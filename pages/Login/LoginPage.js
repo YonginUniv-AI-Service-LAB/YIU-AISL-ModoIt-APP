@@ -5,6 +5,9 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from 'react-native';
 import styles from './LoginPage.styles';
 import { login } from '../../api/authApi';
@@ -55,47 +58,49 @@ export default function LoginPage({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/logo2.png')}
-        style={styles.logo}
-      />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Image
+          source={require('../../assets/images/logo2.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-      <Text style={[styles.label, { top: 360 }]}>이메일</Text>
-      <TextInput
-        style={[styles.input, { top: 377 }]}
-        value={email}
-        onChangeText={setEmail}
-        // placeholder="이메일을 입력하세요"
-        // placeholderTextColor="#C2C2C2"
-        keyboardType="email-address"
-      />
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>이메일</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+          />
 
-      <Text style={[styles.label, { top: 455 }]}>비밀번호</Text>
-      <TextInput
-        style={[styles.input, { top: 470 }]}
-        value={password}
-        onChangeText={setPassword}
-        // placeholder="비밀번호를 입력하세요"
-        // placeholderTextColor="#C2C2C2"
-        secureTextEntry
-      />
+          <Text style={styles.label}>비밀번호</Text>
+          <TextInput
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+        </View>
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>로그인</Text>
-      </TouchableOpacity>
-
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={handleNavigateToSignUp}>
-          <Text style={styles.footerText}>회원가입</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>로그인</Text>
         </TouchableOpacity>
 
-        <View style={styles.divider} />
-
-        <TouchableOpacity onPress={handleNavigateToResetPassword}>
-          <Text style={styles.footerText}>비밀번호 재설정</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <Text style={styles.footerText}>회원가입</Text>
+          </TouchableOpacity>
+          <View style={styles.divider} />
+          <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
+            <Text style={styles.footerText}>비밀번호 재설정</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

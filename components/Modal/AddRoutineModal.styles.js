@@ -24,13 +24,16 @@ const styles = StyleSheet.create({
   },
 
   modalContainer: {
-    minHeight: height * 0.45,
-    maxHeight: height * 0.6,
+    // minHeight: height * 0.45,
+    // maxHeight: height * 0.6,
     width: '100%',
-    maxWidth: 400,
+    // maxWidth: 650,
     backgroundColor: '#FFFFFF',
     borderRadius: modalRadius,
     padding: sidePadding,
+    maxHeight: height * 0.85,
+    alignSelf: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
@@ -43,7 +46,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: height * 0.025,
-    paddingTop: height * 0.01,
+    // paddingTop: height * 0.01,
   },
   modalTitle: {
     fontSize: fontSize,
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
 
   // 박스 안 텍스트 원래 스타일로 복원
   timeText: {
-    fontSize: width * 0.1,
+    fontSize: Math.max(18, width * 0.085), // 작은 기기 대응
     fontWeight: '400',
     includeFontPadding: false,
     textAlignVertical: 'center',
@@ -141,6 +144,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     marginTop: height * 0.01,
+    marginBottom: height * 0.015,
     shadowColor: '#8B5CF6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,

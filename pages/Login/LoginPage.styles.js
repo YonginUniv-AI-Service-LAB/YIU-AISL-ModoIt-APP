@@ -4,51 +4,53 @@ const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    width,
-    height,
+    flex: 1,
     backgroundColor: '#fff',
-    position: 'relative',
+  },
+
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+    paddingVertical: 40,
   },
 
   logo: {
-    position: 'absolute',
-    top: height * 0.15,
-    width: width * 0.31,
-    height: width * 0.31 * (195.53 / 148), // 원본 비율 유지
-    alignSelf: 'center', // 가운데 정렬
+    width: width * 0.33,
+    height: width * 0.33 * (195.53 / 148), // 원본 비율 유지
+    marginBottom: 50,
+  },
+
+  inputGroup: {
+    width: '100%',
+    marginBottom: 50,
   },
 
   label: {
-    position: 'absolute',
-    top: height * 0.32,
-    left: width * 0.11,
     fontSize: width * 0.045,
     fontWeight: '600',
     color: '#ABABAB',
+    marginTop: 20,
+    marginBottom: 5,
   },
 
   input: {
-    position: 'absolute',
-    top: height * 0.36,
-    left: width * 0.11,
-    width: width * 0.78,
-    height: 40,
     borderBottomWidth: 1,
     borderBottomColor: '#ABABAB',
     fontSize: width * 0.04,
     color: '#000',
+    paddingVertical: 8,
   },
 
   loginButton: {
-    position: 'absolute',
-    top: height * 0.68,
-    width: width * 0.8,
-    height: 50,
-    alignSelf: 'center',
+    width: '100%',
+    height: height * 0.065,
     backgroundColor: '#7A73FF',
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 30,
   },
 
   loginButtonText: {
@@ -58,17 +60,10 @@ const styles = StyleSheet.create({
   },
 
   footer: {
-    position: 'absolute',
-    top: height * 0.77,
-    // left: width * 0.32,
-    width: width * 0.43,
-    height: 19,
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
   },
-  
+
   footerText: {
     fontSize: width * 0.042,
     color: '#ABABAB',

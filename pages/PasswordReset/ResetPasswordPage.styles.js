@@ -8,7 +8,7 @@ const inputHeight = height * 0.05;
 const fontSize = width * 0.04;
 const labelFontSize = width * 0.042;
 const smallButtonFontSize = width * 0.04;
-const largeButtonHeight = height * 0.06;
+const largeButtonHeight = height * 0.065;
 const sidePadding = width * 0.11;
 
 export default StyleSheet.create({
