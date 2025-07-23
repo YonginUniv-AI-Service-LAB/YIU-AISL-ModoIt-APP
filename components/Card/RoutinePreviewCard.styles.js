@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -16,7 +16,7 @@ export const SNAP_WIDTH = CARD_WIDTH + CARD_SPACING;
 const styles = StyleSheet.create({
   routineCard: {
     width: CARD_WIDTH,
-    height: verticalScale(380),
+    height: verticalScale(410),
     backgroundColor: '#F0F0FF',
     borderRadius: moderateScale(15),
     paddingTop: verticalScale(24),
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   routineItem: {
     width: '100%',
-    height: verticalScale(43),
+    height: verticalScale(50),
     backgroundColor: '#FFFFFF',
     borderRadius: moderateScale(21.5),
     justifyContent: 'center',
@@ -89,6 +89,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: -0.1,
     paddingHorizontal: scale(16),
+    lineHeight: moderateScale(19), // ✅ 수동 lineHeight 설정 (텍스트 위아래 정렬 안정화)
+    ...Platform.select({
+      android: {
+        includeFontPadding: false,  // ✅ Android 전용: Text 수직 정렬 이슈 방지
+      },
+    }),
   },
 });
 

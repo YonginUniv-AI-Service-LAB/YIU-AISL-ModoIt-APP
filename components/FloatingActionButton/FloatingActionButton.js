@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity, Text, Platform } from 'react-native';
 import styles from './FloatingActionButton.styles';
 
 // 플로팅 액션 버튼 (+)

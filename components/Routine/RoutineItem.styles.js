@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -38,19 +38,26 @@ export default StyleSheet.create({
   itemTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: px(10), // 왼쪽 바와 간격
+    marginLeft: px(5), // 왼쪽 바와 간격
   },
   itemTime: {
     fontSize: px(16),
     fontWeight: '600',
     color: '#1A1A1A',
-    marginRight: px(10),
+    marginRight: px(11),
+    
   },
   itemTitle: {
     fontSize: px(16),
     color: '#1A1A1A',
     fontWeight: '500',
-    flexShrink: 1,
+    flexShrink: 1,  // 텍스트가 길어질 경우 줄바꿈
+    lineHeight: px(18),
+    ...Platform.select({
+      android: {
+        includeFontPadding: false,  // ✅ Android 전용 수직 정렬 보정
+      },
+    }),
   },
   itemCircle: {
     width: px(25),

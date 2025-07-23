@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import styles from './RoutineItem.styles';
 
 export default function RoutineItem({ item, onToggle, onPressItem }) {
-  console.log('✅ checked 상태:', item.id, item.checked); // 상태 확인용 로그
+  // console.log('✅ checked 상태:', item.id, item.checked); // 상태 확인용 로그
 
   return (
     <View style={styles.itemRow}>

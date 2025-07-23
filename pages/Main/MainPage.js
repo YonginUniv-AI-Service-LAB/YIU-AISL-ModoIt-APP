@@ -64,33 +64,6 @@ export default function MainPage({ navigation }) {
 
         saved.sort((a, b) => toMins(a.time) - toMins(b.time));
         setRoutines(saved);
-        // // 4) 추천 받은 프리셋(route.params) 매핑
-        // const recommended = (route.params?.routines || []).map((item, idx) => {
-        //   const rawTime = item.timeSlot ?? item.time_slot ?? item.time;
-        //   const time =
-        //     typeof rawTime === 'string' && rawTime.length >= 5
-        //       ? rawTime.substring(0, 5)
-        //       : '00:00';
-        //   return {
-        //     id: `preset-${item.id ?? idx}`,
-        //     time,
-        //     title: item.content ?? '제목 없음',
-        //     checked: false,
-        //   };
-        // });
-
-        // // 5) 병합 + 중복 제거 + 시간 순 정렬
-        // const seen = new Set();
-        // const merged = [...recommended, ...saved].filter((r) => {
-        //   const key = `${r.title}-${r.time}`;
-        //   if (seen.has(key)) return false;
-        //   seen.add(key);
-        //   return true;
-        // });
-        // merged.sort((a, b) => toMins(a.time) - toMins(b.time));
-
-        // setRoutines(merged);
-
       } catch (error) {
         console.error('루틴 불러오기 실패:', error);
       }

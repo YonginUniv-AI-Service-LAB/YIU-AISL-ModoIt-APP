@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,9 +22,15 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   fabText: {
-    fontSize: size * 0.8,     // 버튼 내 기호 크기
+    fontSize: size * 0.7,
     color: '#fff',
-    lineHeight: size * 0.8,   // 수직 중앙 정렬 보정
+    textAlign: 'center',
+    ...Platform.select({
+      android: {
+        includeFontPadding: false, // ✅ Android 수직 패딩 제거
+        marginBottom: 14,           // ✅ 약간 위로 보정
+      },
+    }),
   },
 });
 

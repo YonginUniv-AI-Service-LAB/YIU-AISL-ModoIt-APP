@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   sectionContainer: {
     marginHorizontal: 9,
-    marginTop: 20,
+    marginTop: 10,
   },
   sectionHeader: {
     fontSize: 20,
