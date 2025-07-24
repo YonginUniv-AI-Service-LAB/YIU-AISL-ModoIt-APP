@@ -22,10 +22,10 @@ export default StyleSheet.create({
     marginLeft: width * 0.03,
   },
   arrow: {
-    width: 10,  // 원본 비율에 맞게 조정
+    width: 10, // 원본 비율에 맞게 조정
     height: 20,
     resizeMode: 'contain', // 이미지 왜곡 방지
-    marginHorizontal: 15,   // 좌우 여백
+    marginHorizontal: 15, // 좌우 여백
   },
   monthText: {
     fontSize: width * 0.05,
@@ -98,6 +98,7 @@ export default StyleSheet.create({
     paddingHorizontal: width * 0.03,
     marginBottom: height * 0.02,
     position: 'relative', // arrow를 절대 위치로 배치하기 위해
+    overflow: 'visible',
   },
   feedbackTitle: {
     fontSize: width * 0.05,
@@ -106,11 +107,20 @@ export default StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  arrowIcon: {
-    width: 10,  // 원본 비율에 맞게 조정
-    height: 20,
+  arrowWrapper: {
     position: 'absolute',
-    right: -(width * 0.35), // 카드 우측 패딩만큼 떨어뜨려서 표시
-    top: -20,
+    right: width * 0.03, // 카드 안쪽 우측 패딩과 동일하게
+    top: '50%',
+    transform: [{ translateY: -10 }], // 높이의 절반만큼 위로
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  arrowIcon: {
+    width: 10, // 원본 비율에 맞게 조정
+    height: 20,
+    resizeMode: 'contain',
+    //position: 'absolute',
+    //right: -(width * 0.35), // 카드 우측 패딩만큼 떨어뜨려서 표시
+    //top: -20,
   },
 });

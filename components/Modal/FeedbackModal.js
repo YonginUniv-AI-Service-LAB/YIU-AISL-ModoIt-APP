@@ -48,9 +48,11 @@ export default function FeedbackModal({
   return (
     <Modal
       visible={visible}
-      transparent
+      transparent={true}
       animationType="fade"
       onRequestClose={onClose}
+      statusBarTranslucent={true} // Android: 상태바 아래까지 덮기
+      hardwareAccelerated={true}
     >
       <View style={styles.overlay}>
         <View style={styles.content}>

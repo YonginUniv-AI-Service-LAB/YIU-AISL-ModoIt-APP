@@ -253,7 +253,11 @@ export default function FeedbackCalendarPage({ navigation }) {
         <View style={styles.feedbackCard}>
           <View style={styles.titleRow}>
             <Text style={styles.feedbackTitle}>{feedbackTitle}</Text>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              style={styles.arrowWrapper}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <Image
                 source={require('../../assets/images/arrow3.png')} // 오른쪽 화살표 이미지
                 style={styles.arrowIcon}
